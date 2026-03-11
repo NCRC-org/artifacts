@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NJ Lender Comparison — NCRC JustData</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'IBM Plex Sans',-apple-system,sans-serif;background:#fff;color:#1a2a3a;padding:20px 16px;max-width:780px;margin:0 auto}.header-tag{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:#1a8fc9;font-weight:700;margin-bottom:4px}h1{font-size:22px;font-weight:700;margin-bottom:4px;line-height:1.2}.subtitle{font-size:13px;color:#7a8a9a;margin-bottom:20px}.tab-row{display:flex;gap:6px;margin-bottom:14px}.tab-btn{flex:1;padding:8px 4px;font-size:12px;font-weight:500;border:1px solid #dde2e6;border-radius:6px;background:#fff;color:#5a6a7a;cursor:pointer;font-family:inherit;transition:all .15s}.tab-btn.active{font-weight:700;border:2px solid #1a8fc9;background:#eef7fc;color:#1a8fc9}select{width:100%;padding:8px 10px;font-size:13px;font-weight:600;border:1px solid #dde2e6;border-radius:6px;background:#fff;color:#1a2a3a;font-family:inherit;cursor:pointer;margin-bottom:14px}.peer-row{display:flex;gap:6px;align-items:center;margin-bottom:16px}.peer-label{font-size:12px;color:#7a8a9a;line-height:28px;margin-right:4px}.peer-btn{padding:4px 12px;font-size:12px;font-weight:400;border:1px solid #dde2e6;border-radius:14px;background:#fff;color:#7a8a9a;cursor:pointer;font-family:inherit}.peer-btn.active{font-weight:600;border:1.5px solid #1a8fc9;background:#eef7fc;color:#1a8fc9}.card{border:1px solid #e0e4e8;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04)}.card-header{padding:10px 12px;background:#f4f6f8;border-bottom:1px solid #e0e4e8;display:flex;justify-content:space-between;align-items:center}.card-header .name{font-size:14px;font-weight:700}.card-header .meta{font-size:11px;color:#7a8a9a}.card-header .right{font-size:11px;font-weight:600;color:#7a8a9a;text-align:right}.mono{font-family:'IBM Plex Mono',monospace}table{width:100%;border-collapse:collapse;font-size:12px}thead tr:first-child th{padding:8px 4px;font-weight:700;font-size:11px}thead tr:first-child th.pop-h{text-align:center;color:#8a6d3b;border-bottom:2px solid #d4a74a;font-size:10px}thead tr:first-child th.subj{text-align:center;color:#1a8fc9;border-bottom:2px solid #1a8fc9}thead tr:first-child th.peer-h{text-align:center;color:#5a6a7a;border-bottom:2px solid #ddd}thead tr:first-child th.diff-h{text-align:center;color:#5a6a7a}thead tr:first-child{border-bottom:2px solid #2a3a4a}thead tr:nth-child(2) th{padding:4px 5px;font-weight:500;color:#8a9aaa;font-size:10px;text-align:right}thead tr:nth-child(2) th:first-child{text-align:left}thead tr:nth-child(2){border-bottom:1px solid #e0e4e8}tbody td{padding:6px 5px;font-family:'IBM Plex Mono',monospace;border-bottom:1px solid #eef0f2;font-size:11px}tbody td:first-child{font-family:'IBM Plex Sans',sans-serif;font-weight:500;padding-left:10px;font-size:12px}tbody td.num{text-align:right}tbody td.pv{color:#7a8a9a}tbody td.pop{text-align:center;color:#8a6d3b;font-weight:600;font-size:10px;background:#fdf8ef}tbody tr:nth-child(odd){background:#f8fafb}tbody tr:nth-child(even){background:#fff}td.neg{color:#c0392b;font-weight:600;background:#fdecea!important}td.pos{color:#27ae60}td.warn{color:#c0392b;font-weight:600}.footnote{margin-top:14px;font-size:10px;color:#9aaaba;line-height:1.6;border-top:1px solid #e0e4e8;padding-top:10px}.footnote .red{color:#c0392b;font-weight:600}.footnote .green{color:#27ae60;font-weight:600}.footnote .amber{color:#8a6d3b;font-weight:600}.footnote strong{color:#6a7a8a;font-weight:600}.sql-toggle{margin-top:12px;font-size:11px;color:#1a8fc9;cursor:pointer;font-weight:600;user-select:none}.sql-box{display:none;margin-top:8px;background:#f4f6f8;border:1px solid #e0e4e8;border-radius:6px;padding:12px;font-family:'IBM Plex Mono',monospace;font-size:10px;line-height:1.6;color:#2a3a4a;white-space:pre-wrap;overflow-x:auto}@media print{body{max-width:100%}.tab-row,select,.peer-row,.sql-toggle,.sql-box{display:none}}
+</style>
+</head>
+<body>
+<div class="header-tag">NCRC JustData · New Jersey</div>
+<h1>Lender Comparison</h1>
+<div class="subtitle">Home Purchase Originations · 2020–2024 · Subject vs. Peer</div>
+<div class="tab-row">
+  <button class="tab-btn active" onclick="switchCat(0)">Banks</button>
+  <button class="tab-btn" onclick="switchCat(1)">Mortgage</button>
+  <button class="tab-btn" onclick="switchCat(2)">Credit Unions</button>
+</div>
+<select id="lenderSelect" onchange="switchLender(this.value)"></select>
+<div class="peer-row">
+  <div class="peer-label">Compare to:</div>
+  <button class="peer-btn active" id="peerType" onclick="switchPeer('type')">All Banks</button>
+  <button class="peer-btn" id="peerAll" onclick="switchPeer('all')">All Lenders</button>
+</div>
+<div class="card">
+  <div class="card-header">
+    <div><div class="name" id="subjName"></div><div class="meta" id="subjMeta"></div></div>
+    <div class="right"><span id="peerName"></span><br><span class="mono" id="peerLoans"></span></div>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th style="text-align:left"></th>
+        <th class="pop-h">NJ Pop.</th>
+        <th colspan="2" class="subj">Subject</th>
+        <th colspan="2" class="peer-h" id="peerColHead">Peer</th>
+        <th class="diff-h">Difference</th>
+      </tr>
+      <tr>
+        <th style="text-align:left"></th>
+        <th style="text-align:center">%</th>
+        <th>#</th><th>%</th>
+        <th>#</th><th>%</th>
+        <th>%</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<div class="footnote">
+  <span class="red">Red subject %</span> = lender's lending share falls significantly below NJ population share for that group (threshold: 3+ percentage points below).<br>
+  <span class="red">Red difference</span> = subject underperforms peer on key equity metrics (Hispanic, Black, LMIB, LMICT, MMCT).
+  <span class="green">Green difference</span> = outperforms peer.<br>
+  <span class="amber">NJ Pop. column</span> = population benchmarks from HUD Low-Mod Income Summary Data (ACS 2020) and Census ACS demographics.<br><br>
+  <strong>Data Source:</strong> HMDA (Home Mortgage Disclosure Act) via FFIEC, stored in BigQuery table <span class="mono">justdata-ncrc.dataexplorer.de_hmda</span>. Population: HUD ACS 2020 Low-Mod file + Census ACS.<br><br>
+  <strong>Filters Applied:</strong><br>
+  · <strong>Geography:</strong> All counties in New Jersey<br>
+  · <strong>Years:</strong> 2020, 2021, 2022, 2023, 2024<br>
+  · <strong>Action Taken:</strong> Originations only (action_taken = '1') — not applications, denials, or other dispositions<br>
+  · <strong>Loan Purpose:</strong> Home purchase only (loan_purpose = '1') — excludes refinance and home improvement<br>
+  · <strong>Occupancy:</strong> Owner-occupied / principal residence (occupancy_type = '1')<br>
+  · <strong>Property Type:</strong> 1-4 family units — excludes multifamily 5+ units<br>
+  · <strong>Construction:</strong> Site-built only — excludes manufactured housing<br>
+  · <strong>Reverse Mortgage:</strong> Excluded<br><br>
+  <strong>Denominators:</strong> Race/ethnicity % uses loans with reported demographic data. LMIB/LMICT/MMCT % uses total originations.<br>
+  <strong>Population benchmarks:</strong> Race from Census ACS. LMIB from HUD Low-Mod Summary (ACS 2020): 39.0% of NJ pop earns &lt;80% AMFI. LMICT from FFIEC Census (hdma1-242116.geo.census): 29.1% of NJ pop lives in FFIEC-classified Low (income_level=1, MFI &lt;50%) + Moderate (income_level=2, MFI 50-80%) tracts. MMCT from FFIEC Census: 42.1% of NJ pop lives in tracts where 50%+ of residents are non-white.
+</div>
+
+<div class="sql-toggle" onclick="toggleSQL()">&#9654; Show SQL Query</div>
+<div class="sql-box" id="sqlBox">SELECT
+    h.lei,
+    MAX(h.lender_name) AS lender_name,
+    MAX(h.lender_type) AS lender_type,
+    h.activity_year,
+    COUNT(*) AS total_originations,
+    COUNTIF(h.is_hispanic) AS hispanic,
+    COUNTIF(h.is_black) AS black,
+    COUNTIF(h.is_white) AS white,
+    COUNTIF(h.is_asian) AS asian,
+    COUNTIF(h.is_native_american) AS native_american,
+    COUNTIF(h.is_multi_racial) AS multi_racial,
+    COUNTIF(h.is_lmib) AS lmib,
+    COUNTIF(h.is_lmict) AS lmict,
+    COUNTIF(h.is_mmct) AS mmct,
+    COUNTIF(h.has_demographic_data) AS loans_with_demo
+FROM `justdata-ncrc.dataexplorer.de_hmda` h
+WHERE h.county_state LIKE '%, New Jersey'
+    AND h.activity_year IN (2020, 2021, 2022, 2023, 2024)
+    AND h.action_taken = '1'           -- Originations only
+    AND h.occupancy_type = '1'         -- Owner-occupied
+    AND h.loan_purpose = '1'           -- Home purchase
+    AND h.total_units IN ('1','2','3','4')  -- 1-4 family
+    AND h.construction_method = '1'    -- Site-built
+    AND (h.reverse_mortgage IS NULL
+         OR h.reverse_mortgage != '1') -- Exclude reverse
+GROUP BY h.lei, h.activity_year
+ORDER BY h.activity_year, total_originations DESC</div>
+
+<script>
+function toggleSQL(){var b=document.getElementById('sqlBox'),t=document.querySelector('.sql-toggle');if(b.style.display==='block'){b.style.display='none';t.innerHTML='&#9654; Show SQL Query'}else{b.style.display='block';t.innerHTML='&#9660; Hide SQL Query'}}
+
+// NJ Population benchmarks
+// Race: Census ACS  |  Income: HUD ACS 2020 Low-Mod Summary
+// LMI pop = 39.0%, Low income pop = 24.9%, LMICT/MMCT don't have direct pop equivalents
+// so we use LMI pop for LMIB benchmark. LMICT and MMCT have no direct pop benchmark.
+var njPop = {
+  hispanic: 21.0,
+  black: 13.0,
+  asian: 10.0,
+  white: 54.0,
+  multi: 2.0,
+  lmib: 39.0,   // HUD: 39.0% of NJ pop is LMI (<80% AMFI)
+  lmict: 29.1,   // FFIEC Census: 29.1% of NJ pop lives in LMI tracts (income_level 1=Low + 2=Moderate)
+  mmct: 42.1      // FFIEC Census: 42.1% of NJ pop lives in majority-minority tracts (50%+ minority)
+};
+
+// Threshold: if lender % is more than 3pp below population %, flag red
+var WARN_THRESHOLD = 3.0;
+
+var banks=[
+{rank:1,name:"Wells Fargo Bank",t:15086,h:1646,b:586,w:9031,a:2279,m:109,li:2531,lc:1524,mc:2438,d:13668},
+{rank:2,name:"JPMorgan Chase Bank",t:12935,h:1570,b:658,w:6802,a:2720,m:106,li:1995,lc:1730,mc:3439,d:11872},
+{rank:3,name:"Bank of America",t:9993,h:1069,b:941,w:5053,a:1560,m:116,li:2597,lc:1800,mc:2613,d:8751},
+{rank:4,name:"Citizens Bank",t:7461,h:490,b:221,w:4497,a:975,m:53,li:1208,lc:724,mc:1258,d:6240},
+{rank:5,name:"TD Bank",t:6951,h:526,b:321,w:3667,a:1108,m:89,li:1279,lc:913,mc:1315,d:5717},
+{rank:6,name:"US Bank",t:6029,h:360,b:72,w:3743,a:824,m:30,li:596,lc:404,mc:919,d:5036},
+{rank:7,name:"Gateway 1st Bank",t:5839,h:1241,b:787,w:2511,a:200,m:50,li:3024,lc:1547,mc:1655,d:4794},
+{rank:8,name:"Citibank",t:4570,h:259,b:100,w:2316,a:1029,m:33,li:181,lc:267,mc:814,d:3738},
+{rank:9,name:"PNC Bank",t:4103,h:322,b:165,w:2068,a:874,m:37,li:939,lc:519,mc:846,d:3469},
+{rank:10,name:"Northpointe Bank",t:3299,h:490,b:323,w:1294,a:129,m:24,li:945,lc:929,mc:1346,d:2267}
+];
+var bankPeer={name:"All Banks",t:134454,h:14360,b:7407,w:74305,a:19138,m:1256,li:29129,lc:19748,mc:29318,d:116622};
+
+var mortgage=[
+{rank:1,name:"CrossCountry Mortgage",t:21348,h:4081,b:1566,w:11439,a:1719,m:223,li:5646,lc:4124,mc:5703,d:19054},
+{rank:2,name:"United Shore Financial",t:18485,h:2948,b:1321,w:8293,a:3396,m:136,li:5047,lc:3515,mc:5806,d:16117},
+{rank:3,name:"Rocket Mortgage",t:17768,h:1825,b:1274,w:6723,a:3839,m:93,li:4833,lc:2943,mc:5149,d:13779},
+{rank:4,name:"Guaranteed Rate",t:15132,h:2027,b:867,w:8280,a:1277,m:203,li:3326,lc:2238,mc:3090,d:12689},
+{rank:5,name:"NJ Lenders",t:14824,h:1994,b:778,w:8113,a:2462,m:163,li:5737,lc:1639,mc:3615,d:13521},
+{rank:6,name:"loanDepot",t:13670,h:1976,b:840,w:6632,a:1589,m:122,li:2882,lc:2325,mc:4179,d:11177},
+{rank:7,name:"Advisors Mortgage Group",t:9742,h:1129,b:422,w:5897,a:324,m:56,li:3843,lc:2156,mc:1504,d:7845},
+{rank:8,name:"American Neighborhood Mtg",t:9578,h:1510,b:1050,w:5662,a:553,m:108,li:3935,lc:2201,mc:2120,d:8894},
+{rank:9,name:"Greentree Mortgage",t:9229,h:1167,b:791,w:6109,a:316,m:64,li:4239,lc:1833,mc:1467,d:8454},
+{rank:10,name:"Caliber Home Loans",t:7676,h:1265,b:617,w:3713,a:615,m:98,li:2729,lc:1477,mc:2013,d:6317}
+];
+var mortgagePeer={name:"All Mortgage Cos",t:329140,h:54538,b:26878,w:162964,a:36554,m:3201,li:101417,lc:64863,mc:86177,d:284600};
+
+var cu=[
+{rank:1,name:"Navy Federal CU",t:2617,h:418,b:366,w:1297,a:156,m:56,li:681,lc:452,mc:544,d:2298},
+{rank:2,name:"Affinity FCU",t:1140,h:84,b:98,w:650,a:148,m:17,li:271,lc:116,mc:273,d:999},
+{rank:3,name:"Pentagon FCU",t:861,h:80,b:39,w:377,a:102,m:12,li:181,lc:101,mc:176,d:611},
+{rank:4,name:"Visions FCU",t:811,h:68,b:23,w:411,a:172,m:6,li:65,lc:39,mc:192,d:681},
+{rank:5,name:"United Nations FCU",t:585,h:49,b:71,w:95,a:273,m:3,li:34,lc:55,mc:261,d:493},
+{rank:6,name:"USAlliance FCU",t:492,h:18,b:17,w:323,a:65,m:2,li:2,lc:14,mc:45,d:425},
+{rank:7,name:"Digital FCU",t:407,h:9,b:5,w:23,a:306,m:0,li:30,lc:29,mc:181,d:344},
+{rank:8,name:"Bethpage FCU",t:381,h:27,b:15,w:195,a:44,m:2,li:32,lc:38,mc:89,d:284},
+{rank:9,name:"Police & Fire FCU",t:321,h:18,b:17,w:221,a:4,m:1,li:113,lc:51,mc:23,d:261},
+{rank:10,name:"Alliant CU",t:310,h:25,b:11,w:177,a:60,m:5,li:15,lc:13,mc:55,d:279}
+];
+var cuPeer={name:"All Credit Unions",t:11900,h:1143,b:988,w:6007,a:1758,m:141,li:2250,lc:1408,mc:2715,d:10059};
+
+var allPeer={name:"All Lenders",t:475494,h:70041,b:35273,w:243276,a:57450,m:4598,li:132796,lc:86019,mc:118210,d:411281};
+
+var cats=[
+{id:"banks",label:"Banks",lenders:banks,typePeer:bankPeer},
+{id:"mortgage",label:"Mortgage",lenders:mortgage,typePeer:mortgagePeer},
+{id:"cu",label:"Credit Unions",lenders:cu,typePeer:cuPeer}
+];
+
+// ck=count key, dk=denom key (d=demo, t=total, null=no%), eq=equity metric for diff, popKey=njPop key
+var metrics=[
+{label:"Total Originations",ck:"t",dk:null,eq:false,popKey:null},
+{label:"Hispanic",ck:"h",dk:"d",eq:true,popKey:"hispanic"},
+{label:"Black",ck:"b",dk:"d",eq:true,popKey:"black"},
+{label:"Asian",ck:"a",dk:"d",eq:false,popKey:"asian"},
+{label:"White",ck:"w",dk:"d",eq:false,popKey:"white"},
+{label:"Multi-Racial",ck:"m",dk:"d",eq:false,popKey:"multi"},
+{label:"LMIB",ck:"li",dk:"t",eq:true,popKey:"lmib"},
+{label:"LMICT",ck:"lc",dk:"t",eq:true,popKey:"lmict"},
+{label:"MMCT",ck:"mc",dk:"t",eq:true,popKey:"mmct"}
+];
+
+var curCat=0,curLender=0,curPeerType="type";
+
+function pct(count,denom){return denom>0?(count/denom*100).toFixed(1)+"%":"\u2014";}
+function pctVal(count,denom){return denom>0?count/denom*100:null;}
+function diffPct(sCount,sDenom,pCount,pDenom){
+  if(!sDenom||!pDenom||sDenom===0||pDenom===0)return{val:null,str:"\u2014"};
+  var sp=sCount/sDenom*100, pp=pCount/pDenom*100, d=sp-pp;
+  return{val:d,str:(d>0?"+":"")+d.toFixed(1)+"%"};
+}
+
+function render(){
+  var cat=cats[curCat],subj=cat.lenders[curLender];
+  var peer=curPeerType==="type"?cat.typePeer:allPeer;
+  var peerLabel=curPeerType==="type"?cat.typePeer.name:"All Lenders";
+
+  document.querySelectorAll(".tab-btn").forEach(function(bt,i){bt.classList.toggle("active",i===curCat)});
+  var sel=document.getElementById("lenderSelect");
+  sel.innerHTML=cat.lenders.map(function(l,i){return'<option value="'+i+'">#'+l.rank+' '+l.name+' ('+l.t.toLocaleString()+' loans)</option>'}).join("");
+  sel.value=curLender;
+  document.getElementById("peerType").textContent=cat.typePeer.name;
+  document.getElementById("peerType").classList.toggle("active",curPeerType==="type");
+  document.getElementById("peerAll").classList.toggle("active",curPeerType==="all");
+  document.getElementById("subjName").textContent=subj.name;
+  document.getElementById("subjMeta").textContent="Rank #"+subj.rank+" \u00b7 "+subj.t.toLocaleString()+" originations";
+  document.getElementById("peerName").textContent="vs "+peerLabel;
+  document.getElementById("peerLoans").textContent=peer.t.toLocaleString()+" originations";
+  document.getElementById("peerColHead").textContent=peerLabel;
+
+  var tbody=document.getElementById("tbody");
+  tbody.innerHTML=metrics.map(function(mt){
+    var sCount=subj[mt.ck], pCount=peer[mt.ck];
+    var isTotal=mt.dk===null;
+    var sDenom=isTotal?null:subj[mt.dk], pDenom=isTotal?null:peer[mt.dk];
+    var sPctStr=isTotal?"":pct(sCount,sDenom);
+    var pPctStr=isTotal?"":pct(pCount,pDenom);
+    var sPctVal=isTotal?null:pctVal(sCount,sDenom);
+    var df=isTotal?{val:null,str:""}:diffPct(sCount,sDenom,pCount,pDenom);
+    var isNeg=df.val!==null&&df.val<-0.5;
+    var isPos=df.val!==null&&df.val>0.5;
+    var diffCls=isNeg&&mt.eq?"neg":isPos&&mt.eq?"pos":"";
+
+    // Population benchmark
+    var popBench=mt.popKey?njPop[mt.popKey]:null;
+    var popStr=popBench!==null?popBench.toFixed(1)+"%":"\u2014";
+
+    // Flag subject % red if significantly below population benchmark
+    var subjWarn=false;
+    if(popBench!==null&&sPctVal!==null){
+      subjWarn=(popBench-sPctVal)>=WARN_THRESHOLD;
+    }
+    var subjPctCls=subjWarn?"num warn":"num";
+
+    return'<tr><td>'+mt.label+'</td>'+
+      '<td class="pop">'+popStr+'</td>'+
+      '<td class="num">'+sCount.toLocaleString()+'</td>'+
+      '<td class="'+subjPctCls+'">'+sPctStr+'</td>'+
+      '<td class="num pv">'+pCount.toLocaleString()+'</td>'+
+      '<td class="num pv">'+pPctStr+'</td>'+
+      '<td class="num '+diffCls+'">'+df.str+'</td></tr>';
+  }).join("");
+}
+function switchCat(i){curCat=i;curLender=0;render()}
+function switchLender(i){curLender=Number(i);render()}
+function switchPeer(t){curPeerType=t;render()}
+render();
+</script>
+</body>
+</html>
