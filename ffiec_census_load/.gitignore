@@ -1,0 +1,6 @@
+*.zip
+*.dat
+*.txt
+extracted/
+parquet/
+data/
