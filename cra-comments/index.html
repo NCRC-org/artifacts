@@ -245,6 +245,7 @@ footer { margin: 36px 0 28px; font-size: 13px; color: var(--fg-muted); }
 
   <div class="searchbar" role="search">
     <input type="search" id="q" placeholder="Search by keyword, organization or issue." aria-label="Search by keyword, organization or issue" autocomplete="off">
+    <label class="statesel"><input type="checkbox" id="membersel"> Current NCRC member organizations</label>
     <label class="statesel">State <select id="statesel" aria-label="Filter to comments from one state"><option value="">All states</option></select></label>
     <div class="chips" id="chips"></div>
   </div>
@@ -318,7 +319,7 @@ var POS_SLOT = { objects: 8, supports: 1, asks_for_change: 4, raises_without_pos
 var STANCE_SLOT = { support: 1, mixed: 4, oppose: 8, no_position: 9 };
 var STANCE_ORDER = ['support', 'mixed', 'oppose', 'no_position'];
 var PROV_POS = { support: 'supports', oppose: 'objects', mixed: 'asks_for_change', neutral_or_question_only: 'raises_without_position' };
-var DEF = { q: '', org: '', type: '', stance: '', issue: '', prov: '', pos: '', ncrc: '', ncrcdata: '', ncrcany: '', state: '', view: '', once: '', sort: 'date-desc' };
+var DEF = { q: '', org: '', type: '', stance: '', issue: '', prov: '', pos: '', ncrc: '', ncrcdata: '', ncrcany: '', state: '', member: '', view: '', once: '', sort: 'date-desc' };
 
 var D = null, C = [], S = {}, U = [];
 var reviewState = REVIEW_API ? 'unknown' : 'off', liveOv = {};
@@ -504,6 +505,7 @@ function readHash() {
   $('q').value = S.q;
   $('sort').value = S.sort;
   if ($('statesel')) $('statesel').value = S.state || '';
+  if ($('membersel')) $('membersel').checked = !!S.member;
 }
 function writeHash() {
   var p = new URLSearchParams();
@@ -529,6 +531,7 @@ function matches(c) {
   if (S.ncrc && !mentions(c)) return false;
   if (S.ncrcdata && !dataOnly(c)) return false;
   if (S.ncrcany && !cited(c)) return false;
+  if (S.member && !c.ncrc_member) return false;
   if (S.state && !(c.states || []).some(function (x) { return x.state === S.state; })) return false;
   if (S.type && c.commenter_type !== S.type) return false;
   if (S.stance && bucket(c) !== S.stance) return false;
@@ -570,18 +573,20 @@ function chip(label, keysToClear) {
 function drawChips() {
   var h = '';
   $('statesel').value = S.state || '';
+  $('membersel').checked = !!S.member;
   if (S.q) h += chip('Search: ' + S.q, ['q']);
   if (S.ncrc) h += chip('Mentions NCRC', ['ncrc']);
   if (S.ncrcdata) h += chip('Uses NCRC data without credit', ['ncrcdata']);
   if (S.ncrcany) h += chip('NCRC cited (name or data)', ['ncrcany']);
   if (S.org) h += chip(S.org === 'org' ? 'Organizations' : 'Individuals', ['org']);
+  if (S.member) h += chip('Current NCRC member organizations', ['member']);
   if (S.state) h += chip('State: ' + stateName(S.state), ['state']);
   if (S.type) h += chip(typeLabel(S.type), ['type']);
   if (S.stance) h += chip('Stance: ' + stanceLabel(S.stance), ['stance']);
   if (S.issue) h += chip('Issue: ' + issueLabel(S.issue), ['issue', 'pos']);
   if (S.prov) h += chip('Rule section: ' + provLabel(S.prov), ['prov', 'pos']);
   if (S.pos) h += chip(posLabel(S.pos), ['pos']);
-  if (h) h += '<button type="button" class="btn ghost small" data-clear="q,org,state,type,stance,issue,prov,pos,ncrc,ncrcdata,ncrcany">Clear all</button>';
+  if (h) h += '<button type="button" class="btn ghost small" data-clear="q,org,state,member,type,stance,issue,prov,pos,ncrc,ncrcdata,ncrcany">Clear all</button>';
   $('chips').innerHTML = h;
 }
 
@@ -1221,6 +1226,7 @@ function wire() {
     qTimer = setTimeout(function () { S.q = val; UI.shown = PAGE; render(); }, 200);
   });
   $('sort').addEventListener('change', function () { S.sort = this.value; render(); });
+  $('membersel').addEventListener('change', function () { S.member = this.checked ? '1' : ''; UI.shown = PAGE; render(); });
   $('statesel').addEventListener('change', function () { S.state = this.value; UI.shown = PAGE; render(); });
   $('csv').addEventListener('click', downloadCsv);
   window.addEventListener('hashchange', function () { readHash(); UI.shown = PAGE; render(); });
