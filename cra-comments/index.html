@@ -148,6 +148,7 @@ details.dt summary { cursor: pointer; color: var(--link); }
 .listhead { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; margin: 0 0 10px; }
 .listhead .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .listhead .count { font-size: 18px; font-weight: 600; }
+.statesel { display: inline-flex; align-items: center; gap: 8px; margin: 8px 0; font-size: 15px; }
 select { font: inherit; font-size: 15px; color: var(--fg); background: var(--bg); border: 1px solid var(--fg-muted); border-radius: 2px; padding: 6px 8px; min-height: 40px; }
 .card, .fulltext, .exp { scroll-margin-top: 90px; }
 .card { border: 1px solid var(--border); border-radius: 4px; padding: 14px 16px; margin: 0 0 12px; background: var(--bg); min-width: 0; }
@@ -244,6 +245,7 @@ footer { margin: 36px 0 28px; font-size: 13px; color: var(--fg-muted); }
 
   <div class="searchbar" role="search">
     <input type="search" id="q" placeholder="Search by keyword, organization or issue." aria-label="Search by keyword, organization or issue" autocomplete="off">
+    <label class="statesel">State <select id="statesel" aria-label="Filter to comments from one state"><option value="">All states</option></select></label>
     <div class="chips" id="chips"></div>
   </div>
 
@@ -316,7 +318,7 @@ var POS_SLOT = { objects: 8, supports: 1, asks_for_change: 4, raises_without_pos
 var STANCE_SLOT = { support: 1, mixed: 4, oppose: 8, no_position: 9 };
 var STANCE_ORDER = ['support', 'mixed', 'oppose', 'no_position'];
 var PROV_POS = { support: 'supports', oppose: 'objects', mixed: 'asks_for_change', neutral_or_question_only: 'raises_without_position' };
-var DEF = { q: '', org: '', type: '', stance: '', issue: '', prov: '', pos: '', ncrc: '', ncrcdata: '', ncrcany: '', view: '', once: '', sort: 'date-desc' };
+var DEF = { q: '', org: '', type: '', stance: '', issue: '', prov: '', pos: '', ncrc: '', ncrcdata: '', ncrcany: '', state: '', view: '', once: '', sort: 'date-desc' };
 
 var D = null, C = [], S = {}, U = [];
 var reviewState = REVIEW_API ? 'unknown' : 'off', liveOv = {};
@@ -349,6 +351,27 @@ function modelBucket(c) { return c.overall_stance ? String(c.overall_stance).rep
 function bucket(c) { return c._ov && c._ov.value ? c._ov.value : modelBucket(c); }
 function stanceLabel(b) { return (D.stances && D.stances[b]) || (b === 'no_position' ? 'No position' : titleCase(b)); }
 function exactStance(c) { return c.overall_stance ? ((D.stances && D.stances[c.overall_stance]) || titleCase(c.overall_stance)) : ''; }
+function stateName(code) { return ((D && D.state_names) || {})[code] || code; }
+function fillStates() {
+  var cnt = {};
+  C.forEach(function (c) { (c.states || []).forEach(function (x) { cnt[x.state] = (cnt[x.state] || 0) + 1; }); });
+  var codes = keys(cnt).sort(function (a, b) { return stateName(a).localeCompare(stateName(b)); });
+  var h = '<option value="">All states (' + plural(codes.length, 'state', 'states') + ' stated)</option>';
+  codes.forEach(function (k) { h += '<option value="' + esc(k) + '">' + esc(stateName(k)) + ' (' + cnt[k] + ')</option>'; });
+  $('statesel').innerHTML = h;
+  $('statesel').value = S.state || '';
+}
+function stateHtml(c) {
+  var st = c.states || [];
+  if (!st.length) return '<h5>Location</h5><p class="pl">No state stated in the comment or the submitter fields.</p>';
+  return '<h5>Location</h5>' + st.map(function (x) {
+    var srcs = x.sources.map(function (s) {
+      if (s.source === 'headquarters_lookup') return '<div class="qmeta">Headquarters confirmed outside the comment: ' + esc(s.quote) + '</div>';
+      return s.source === 'submitter_field' ? '<div class="qmeta">Submitter field on Regulations.gov</div>' : '<div class="qmeta">Stated in the comment: "' + esc(s.quote) + '"</div>';
+    }).join('');
+    return '<p class="pl"><strong>' + esc(stateName(x.state)) + '</strong>' + (x.place ? ' (' + esc(x.place) + ')' : '') + '</p>' + srcs;
+  }).join('');
+}
 function orgFlag(c) { return c.is_organization === true ? 'org' : (c.is_organization === false ? 'ind' : ''); }
 function issueLabel(id) { return (D.issues && D.issues[id] && D.issues[id].label) || (id === 'other' || !id ? 'Other' : titleCase(id)); }
 function provLabel(id) { return (D.provisions && D.provisions[id]) || titleCase(id); }
@@ -415,6 +438,7 @@ function init() {
     if (src.test) { var b = $('testbanner'); b.hidden = false; b.textContent = 'Showing test data (' + src.url + '), not the live docket.'; }
     $('app').hidden = false;
     header();
+    fillStates();
     readHash();
     wire();
     if (UI.provOpen) $('provblock').open = true;
@@ -479,6 +503,7 @@ function readHash() {
   S.view = '';
   $('q').value = S.q;
   $('sort').value = S.sort;
+  if ($('statesel')) $('statesel').value = S.state || '';
 }
 function writeHash() {
   var p = new URLSearchParams();
@@ -504,6 +529,7 @@ function matches(c) {
   if (S.ncrc && !mentions(c)) return false;
   if (S.ncrcdata && !dataOnly(c)) return false;
   if (S.ncrcany && !cited(c)) return false;
+  if (S.state && !(c.states || []).some(function (x) { return x.state === S.state; })) return false;
   if (S.type && c.commenter_type !== S.type) return false;
   if (S.stance && bucket(c) !== S.stance) return false;
   if (S.issue && !items(c, 'issues').some(function (i) { return i.id === S.issue && (!S.pos || i.position === S.pos); })) return false;
@@ -543,17 +569,19 @@ function chip(label, keysToClear) {
 }
 function drawChips() {
   var h = '';
+  $('statesel').value = S.state || '';
   if (S.q) h += chip('Search: ' + S.q, ['q']);
   if (S.ncrc) h += chip('Mentions NCRC', ['ncrc']);
   if (S.ncrcdata) h += chip('Uses NCRC data without credit', ['ncrcdata']);
   if (S.ncrcany) h += chip('NCRC cited (name or data)', ['ncrcany']);
   if (S.org) h += chip(S.org === 'org' ? 'Organizations' : 'Individuals', ['org']);
+  if (S.state) h += chip('State: ' + stateName(S.state), ['state']);
   if (S.type) h += chip(typeLabel(S.type), ['type']);
   if (S.stance) h += chip('Stance: ' + stanceLabel(S.stance), ['stance']);
   if (S.issue) h += chip('Issue: ' + issueLabel(S.issue), ['issue', 'pos']);
   if (S.prov) h += chip('Rule section: ' + provLabel(S.prov), ['prov', 'pos']);
   if (S.pos) h += chip(posLabel(S.pos), ['pos']);
-  if (h) h += '<button type="button" class="btn ghost small" data-clear="q,org,type,stance,issue,prov,pos,ncrc,ncrcdata,ncrcany">Clear all</button>';
+  if (h) h += '<button type="button" class="btn ghost small" data-clear="q,org,state,type,stance,issue,prov,pos,ncrc,ncrcdata,ncrcany">Clear all</button>';
   $('chips').innerHTML = h;
 }
 
@@ -858,6 +886,7 @@ function expanded(c, v) {
   if (c.commenter_subtype) tl.push('Subtype: ' + c.commenter_subtype);
   if (tl.length) h += '<p class="pl">' + tl.map(esc).join('<br>') + '</p>';
   if (c.type_basis) h += '<p class="pl">Why: ' + esc(c.type_basis) + '</p>';
+  h += stateHtml(c);
   if (c.overall_stance) h += overrideHtml(c);
   if (c.issues.length) {
     h += '<h5>Issues raised</h5>' + c.issues.map(function (i, n) {
@@ -1168,9 +1197,9 @@ function csvCell(s) {
 function downloadCsv() {
   var r = cardGroups();
   var list = S.once ? r.cards.map(function (g) { return g.lead; }) : r.hit;
-  var rows = [['id', 'organization', 'name', 'commenter_type', 'model_stance', 'reviewed_stance', 'issues', 'mentions_ncrc', 'uses_ncrc_data', 'summary', 'url']];
+  var rows = [['id', 'organization', 'name', 'states', 'commenter_type', 'model_stance', 'reviewed_stance', 'issues', 'mentions_ncrc', 'uses_ncrc_data', 'summary', 'url']];
   list.forEach(function (c) {
-    rows.push([c.id, c.org, c.name, c.commenter_type ? typeLabel(c.commenter_type) : '', exactStance(c), c._ov ? stanceLabel(c._ov.value) : '',
+    rows.push([c.id, c.org, c.name, (c.states || []).map(function (x) { return x.state; }).join('; '), c.commenter_type ? typeLabel(c.commenter_type) : '', exactStance(c), c._ov ? stanceLabel(c._ov.value) : '',
       uniqItems(c, tagView()).map(function (i) { return i.label; }).join('; '), c._ncrc ? c._ncrc.count : 0, c.ncrc_data ? (c.ncrc_data.high || 0) : 0, c.summary, c.url]);
   });
   var txt = '﻿' + rows.map(function (r) { return r.map(csvCell).join(','); }).join('\r\n');
@@ -1192,6 +1221,7 @@ function wire() {
     qTimer = setTimeout(function () { S.q = val; UI.shown = PAGE; render(); }, 200);
   });
   $('sort').addEventListener('change', function () { S.sort = this.value; render(); });
+  $('statesel').addEventListener('change', function () { S.state = this.value; UI.shown = PAGE; render(); });
   $('csv').addEventListener('click', downloadCsv);
   window.addEventListener('hashchange', function () { readHash(); UI.shown = PAGE; render(); });
   document.addEventListener('change', function (e) {
