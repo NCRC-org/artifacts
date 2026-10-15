@@ -1109,10 +1109,8 @@ function overrideHtml(c) {
   }
   if (reviewOn()) {
     var ed = UI.edit[c.id];
-    if (reviewState === 'unknown') {
-      h += '<p class="pl note">Checking review service...</p>';
-    } else if (reviewState === 'down') {
-      h += '<p class="pl"><button type="button" class="linkbtn" disabled style="color:var(--fg-muted);text-decoration:none;cursor:default">Review service unavailable</button></p>';
+    if (reviewState === 'unknown' || reviewState === 'down') {
+      /* Review service not reachable: show nothing. Stance changes go through Jay. */
     } else if (!ed) {
       h += '<p class="pl"><button type="button" class="linkbtn" data-rv="change" data-cid="' + esc(c.id) + '" data-fk="rvc-' + esc(c.id) + '">Change</button></p>';
     } else if (ed.mode === 'name') {
