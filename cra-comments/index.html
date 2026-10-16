@@ -179,6 +179,7 @@ select { font: inherit; font-size: 15px; color: var(--fg); background: var(--bg)
 details.sect { margin: 16px 0 0; border: 1px solid var(--border); border-radius: 4px; padding: 0 14px; }
 details.sect summary { cursor: pointer; font-weight: 600; font-size: 17px; padding: 12px 0; }
 details.sect[open] summary { border-bottom: 1px solid var(--border); margin-bottom: 8px; }
+details.topsect summary h2 { display: inline; margin: 0; font-size: inherit; font-weight: inherit; }
 .origlinks { margin: 0 0 8px; font-size: 15px; overflow-wrap: anywhere; }
 @media (max-width: 599px) { .chead { flex-direction: column; align-items: stretch; } .readbtn { width: 100%; } }
 .card h3 { font-size: 19px; line-height: 1.25; margin: 0 0 6px; font-weight: 600; overflow-wrap: anywhere; }
@@ -265,13 +266,14 @@ footer { margin: 36px 0 28px; font-size: 13px; color: var(--fg-muted); }
     <p class="hint">Position on the proposal as a whole. Strong support and strong opposition are grouped with Support and Oppose. The exact stance is shown when you open a comment.</p>
     <div class="main-stance" id="stancebar"></div>
     <ul class="legend" id="stancelegend"></ul>
-    <div class="subh">By commenter type</div>
-    <div id="stancemulti"></div>
-    <details class="dt"><summary>Show as table</summary><div class="scroll" id="stancetbl"></div></details>
+    <details class="sect" id="typeblock"><summary>By commenter type</summary>
+      <div id="stancemulti"></div>
+      <details class="dt"><summary>Show as table</summary><div class="scroll" id="stancetbl"></div></details>
+    </details>
   </section>
 
   <section class="block" aria-labelledby="h-raise">
-    <h2 id="h-raise">What they raise</h2>
+    <details class="sect topsect" id="raiseblock"><summary><h2 id="h-raise">What they raise</h2></summary>
     <p class="hint" id="raisehint"></p>
     <div id="issues"></div>
     <div class="more" id="issuemore"></div>
@@ -279,6 +281,7 @@ footer { margin: 36px 0 28px; font-size: 13px; color: var(--fg-muted); }
       <p class="hint">The proposal's own provisions, ranked by how many comments take a position on them. Click one to see only those comments.</p>
       <div id="provlist"></div>
       <div class="more" id="provmore"></div>
+    </details>
     </details>
   </section>
 
@@ -661,7 +664,7 @@ function drawIssues() {
   $('raisehint').textContent = 'Issues commenters raised, in plain terms, ranked by how many comments raise them. Click an issue to see only those comments.';
   if (hasIssues) drawRank('issues', 'issues', 'issuemore');
   else $('issues').innerHTML = '<p class="empty">No issue data for this docket yet. Use the section list below.</p>';
-  if (!hasIssues || S.prov || UI.provOpen) { $('provblock').open = true; UI.provOpen = false; }
+  if (!hasIssues || S.prov || UI.provOpen) { $('provblock').open = true; $('raiseblock').open = true; UI.provOpen = false; }
   drawRank('prov', 'provlist', 'provmore');
 }
 
