@@ -180,6 +180,14 @@ details.sect { margin: 16px 0 0; border: 1px solid var(--border); border-radius:
 details.sect summary { cursor: pointer; font-weight: 600; font-size: 17px; padding: 12px 0; }
 details.sect[open] summary { border-bottom: 1px solid var(--border); margin-bottom: 8px; }
 details.topsect summary h2 { display: inline; margin: 0; font-size: inherit; font-weight: inherit; }
+.tlbar { display: flex; gap: 8px; margin: 8px 0; }
+#timeline svg { width: 100%; height: auto; display: block; }
+.tl-grid { stroke: var(--border); stroke-width: 1; }
+.tl-axis { fill: var(--fg-muted); font-size: 12px; }
+.tl-all { fill: none; stroke: var(--fg-muted); stroke-width: 2; opacity: .35; }
+.tl-line { fill: none; stroke: var(--link); stroke-width: 2.5; stroke-linejoin: round; }
+.tl-dot { fill: var(--link); stroke: var(--bg); stroke-width: 1.5; }
+.tl-end { stroke: var(--fg-muted); stroke-width: 1; stroke-dasharray: 4 3; }
 .origlinks { margin: 0 0 8px; font-size: 15px; overflow-wrap: anywhere; }
 @media (max-width: 599px) { .chead { flex-direction: column; align-items: stretch; } .readbtn { width: 100%; } }
 .card h3 { font-size: 19px; line-height: 1.25; margin: 0 0 6px; font-weight: 600; overflow-wrap: anywhere; }
@@ -282,6 +290,15 @@ footer { margin: 36px 0 28px; font-size: 13px; color: var(--fg-muted); }
       <div id="provlist"></div>
       <div class="more" id="provmore"></div>
     </details>
+    </details>
+  </section>
+
+  <section class="block" aria-labelledby="h-when">
+    <details class="sect topsect" id="whenblock"><summary><h2 id="h-when">When they were posted</h2></summary>
+    <p class="hint">Comments by the date Regulations.gov posted them. The line follows the search, state, member and other filters above. When a filter is on, the faint line shows all comments.</p>
+    <div class="tlbar" role="group" aria-label="Chart type"><button type="button" class="pill on" id="tl-day" aria-pressed="true">Per day</button><button type="button" class="pill" id="tl-cum" aria-pressed="false">Running total</button></div>
+    <div id="timeline"></div>
+    <details class="dt"><summary>Show as table</summary><div class="scroll" id="timetbl"></div></details>
     </details>
   </section>
 
@@ -563,7 +580,7 @@ function render(first) {
   focusKey = active && active.getAttribute ? active.getAttribute('data-fk') : null;
   U = C.filter(function (c) { return S.once ? c._first : true; });
   writeHash();
-  drawChips(); drawWho(); drawStand(); drawIssues(); drawList();
+  drawChips(); drawWho(); drawStand(); drawIssues(); drawTimeline(); drawList();
   if (focusKey) {
     var els = document.querySelectorAll('[data-fk]'), i;
     for (i = 0; i < els.length; i++) if (els[i].getAttribute('data-fk') === focusKey) { els[i].focus({ preventScroll: true }); break; }
@@ -658,6 +675,58 @@ function drawStand() {
   var tb = '<table><thead><tr><th>Commenter type</th>' + buckets.map(function (b) { return '<th>' + esc(stanceLabel(b)) + '</th>'; }).join('') + '<th>Total</th></tr></thead><tbody>';
   order.forEach(function (t) { tb += '<tr><td>' + esc(typeLabel(t)) + '</td>' + buckets.map(function (b) { return '<td>' + m[t][b] + '</td>'; }).join('') + '<td>' + tt[t] + '</td></tr>'; });
   $('stancetbl').innerHTML = tb + '</tbody></table>';
+}
+
+function dayList(a, b) {
+  var out = [], d = new Date(a + 'T00:00:00Z'), e = new Date(b + 'T00:00:00Z');
+  while (d <= e) { out.push(d.toISOString().slice(0, 10)); d.setUTCDate(d.getUTCDate() + 1); }
+  return out;
+}
+function niceMax(v) {
+  if (v <= 4) return 4;
+  var p = Math.pow(10, Math.floor(Math.log(v) / Math.LN10)), m = v / p;
+  return (m <= 1 ? 1 : m <= 2 ? 2 : m <= 4 ? 4 : m <= 8 ? 8 : 10) * p;
+}
+function drawTimeline() {
+  var host = $('timeline');
+  if (!host) return;
+  var per = D.comment_period || {}, hits = U.filter(matches);
+  var dates = U.map(function (c) { return c.posted; }).filter(Boolean).sort();
+  if (!dates.length) { host.innerHTML = ''; return; }
+  var start = per.start && per.start < dates[0] ? per.start : dates[0];
+  var end = per.end && per.end > dates[dates.length - 1] ? per.end : dates[dates.length - 1];
+  var days = dayList(start, end), n = days.length, cum = UI.tl === 'cum';
+  function tally(list) { var m = {}; list.forEach(function (c) { if (c.posted) m[c.posted] = (m[c.posted] || 0) + 1; }); return m; }
+  function series(list) {
+    var m = tally(list), run = 0;
+    return days.map(function (d) { var v = m[d] || 0; run += v; return { d: d, day: v, tot: run, y: cum ? run : v }; });
+  }
+  var all = series(U), sel = series(hits), filtered = hits.length !== U.length;
+  var W = 720, H = 280, L = 44, R = 16, T = 16, B = 34;
+  var top = niceMax(Math.max.apply(null, all.map(function (p) { return p.y; })));
+  function px(i) { return L + (n > 1 ? i / (n - 1) : 0) * (W - L - R); }
+  function py(v) { return T + (1 - v / top) * (H - T - B); }
+  function path(s) { return s.map(function (p, i) { return (i ? 'L' : 'M') + px(i).toFixed(1) + ',' + py(p.y).toFixed(1); }).join(' '); }
+  var svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc((cum ? 'Running total of comments posted' : 'Comments posted per day') + ', ' + fmtMD(start) + ' to ' + fmtMD(end) + '. ' + plural(hits.length, 'comment', 'comments') + ' match the current filters.') + '">';
+  [0, top / 2, top].forEach(function (v) {
+    svg += '<line class="tl-grid" x1="' + L + '" x2="' + (W - R) + '" y1="' + py(v).toFixed(1) + '" y2="' + py(v).toFixed(1) + '"/><text class="tl-axis" x="' + (L - 6) + '" y="' + (py(v) + 4).toFixed(1) + '" text-anchor="end">' + num(v) + '</text>';
+  });
+  var step = Math.ceil(n / 8), i;
+  for (i = 0; i < n; i += step) svg += '<text class="tl-axis" x="' + px(i).toFixed(1) + '" y="' + (H - 12) + '" text-anchor="' + (i === 0 ? 'start' : 'middle') + '">' + esc(fmtMD(days[i])) + '</text>';
+  var ei = per.end ? days.indexOf(per.end) : -1;
+  if (ei >= 0) svg += '<line class="tl-end" x1="' + px(ei).toFixed(1) + '" x2="' + px(ei).toFixed(1) + '" y1="' + T + '" y2="' + (H - B) + '"><title>Comment period closed ' + esc(fmtDate(per.end)) + '</title></line>';
+  if (filtered) svg += '<path class="tl-all" d="' + path(all) + '"/>';
+  svg += '<path class="tl-line" d="' + path(sel) + '"/>';
+  sel.forEach(function (p, j) {
+    if (p.day) svg += '<circle class="tl-dot" cx="' + px(j).toFixed(1) + '" cy="' + py(p.y).toFixed(1) + '" r="4"><title>' + esc(fmtDate(p.d) + ': ' + plural(p.day, 'comment', 'comments') + ', ' + num(p.tot) + ' total') + '</title></circle>';
+  });
+  svg += '</svg>';
+  host.innerHTML = hits.length ? svg + (ei >= 0 ? '<p class="note">Dashed line: comment period closed ' + esc(fmtDate(per.end)) + '.</p>' : '') : '<p class="empty">No comments match the current filters.</p>';
+  var tb = '<table><thead><tr><th>Date posted</th><th>Comments</th><th>Running total</th></tr></thead><tbody>';
+  sel.forEach(function (p) { if (p.day) tb += '<tr><td>' + esc(fmtDate(p.d)) + '</td><td>' + p.day + '</td><td>' + p.tot + '</td></tr>'; });
+  $('timetbl').innerHTML = tb + '</tbody></table>';
+  $('tl-day').classList.toggle('on', !cum); $('tl-day').setAttribute('aria-pressed', String(!cum));
+  $('tl-cum').classList.toggle('on', cum); $('tl-cum').setAttribute('aria-pressed', String(cum));
 }
 
 function drawIssues() {
@@ -1221,6 +1290,8 @@ function downloadCsv() {
 function parseSet(s) { var o = {}; new URLSearchParams(s).forEach(function (v, k) { o[k] = v; }); return o; }
 
 function wire() {
+  $('tl-day').addEventListener('click', function () { UI.tl = 'day'; drawTimeline(); });
+  $('tl-cum').addEventListener('click', function () { UI.tl = 'cum'; drawTimeline(); });
   $('q').addEventListener('input', function () {
     var val = this.value.trim();
     clearTimeout(qTimer);
