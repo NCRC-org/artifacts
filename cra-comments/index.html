@@ -339,7 +339,7 @@ var POS_SLOT = { objects: 8, supports: 1, asks_for_change: 4, raises_without_pos
 var STANCE_SLOT = { support: 1, mixed: 4, oppose: 8, no_position: 9 };
 var STANCE_ORDER = ['support', 'mixed', 'oppose', 'no_position'];
 var PROV_POS = { support: 'supports', oppose: 'objects', mixed: 'asks_for_change', neutral_or_question_only: 'raises_without_position' };
-var DEF = { q: '', org: '', type: '', stance: '', issue: '', prov: '', pos: '', ncrc: '', ncrcdata: '', ncrcany: '', state: '', member: '', view: '', once: '', sort: 'date-desc' };
+var DEF = { q: '', org: '', type: '', stance: '', issue: '', prov: '', pos: '', ncrc: '', ncrcdata: '', ncrcany: '', tmpl: '', state: '', member: '', view: '', once: '', sort: 'date-desc' };
 
 var D = null, C = [], S = {}, U = [];
 var reviewState = REVIEW_API ? 'unknown' : 'off', liveOv = {};
@@ -551,6 +551,9 @@ function matches(c) {
   if (S.ncrc && !mentions(c)) return false;
   if (S.ncrcdata && !dataOnly(c)) return false;
   if (S.ncrcany && !cited(c)) return false;
+  if (S.tmpl === '1' && !usesTmpl(c)) return false;
+  if (S.tmpl === 'used' && tmplVerdict(c) !== 'used') return false;
+  if (S.tmpl === 'adapted' && tmplVerdict(c) !== 'adapted') return false;
   if (S.member && !c.ncrc_member) return false;
   if (S.state && !(c.states || []).some(function (x) { return x.state === S.state; })) return false;
   if (S.type && c.commenter_type !== S.type) return false;
@@ -598,6 +601,7 @@ function drawChips() {
   if (S.ncrc) h += chip('Mentions NCRC', ['ncrc']);
   if (S.ncrcdata) h += chip('Uses NCRC data without credit', ['ncrcdata']);
   if (S.ncrcany) h += chip('NCRC cited (name or data)', ['ncrcany']);
+  if (S.tmpl) h += chip(S.tmpl === 'used' ? 'Substantially used NCRC template' : S.tmpl === 'adapted' ? 'Used part of NCRC template' : 'Used NCRC template', ['tmpl']);
   if (S.org) h += chip(S.org === 'org' ? 'Organizations' : 'Individuals', ['org']);
   if (S.member) h += chip('Current NCRC member organizations', ['member']);
   if (S.state) h += chip('State: ' + stateName(S.state), ['state']);
@@ -606,7 +610,7 @@ function drawChips() {
   if (S.issue) h += chip('Issue: ' + issueLabel(S.issue), ['issue', 'pos']);
   if (S.prov) h += chip('Rule section: ' + provLabel(S.prov), ['prov', 'pos']);
   if (S.pos) h += chip(posLabel(S.pos), ['pos']);
-  if (h) h += '<button type="button" class="btn ghost small" data-clear="q,org,state,member,type,stance,issue,prov,pos,ncrc,ncrcdata,ncrcany">Clear all</button>';
+  if (h) h += '<button type="button" class="btn ghost small" data-clear="q,org,state,member,type,stance,issue,prov,pos,ncrc,ncrcdata,ncrcany,tmpl">Clear all</button>';
   $('chips').innerHTML = h;
 }
 
@@ -624,7 +628,12 @@ function drawWho() {
   });
   var byName = U.filter(mentions).length, dataN = U.filter(dataOnly).length, citedN = U.filter(cited).length;
   if (!S.once && D.totals && typeof D.totals.ncrc_cited_any === 'number') citedN = D.totals.ncrc_cited_any;
+  var tmplN = U.filter(usesTmpl).length, tmplSub = U.filter(function (c) { return tmplVerdict(c) === 'used'; }).length;
+  if (!S.once && D.totals && typeof D.totals.uses_template === 'number') { tmplN = D.totals.uses_template; tmplSub = D.totals.uses_template_substantial; }
   $('big').innerHTML =
+    '<div class="bigtile"><button type="button" class="bigbtn" data-set="tmpl=1" aria-pressed="' + (S.tmpl === '1') + '" data-fk="big-tmpl"><span class="n">' + num(tmplN) + '</span><span class="l">Used NCRC template</span><span class="sl">letters built on or adapted from our template</span></button>' +
+    '<div class="tpills"><button type="button" class="pill' + (S.tmpl === 'used' ? ' on' : '') + '" data-set="tmpl=used" data-fk="pill-tmpl-used">Substantially ' + num(tmplSub) + '</button>' +
+    '<button type="button" class="pill' + (S.tmpl === 'adapted' ? ' on' : '') + '" data-set="tmpl=adapted" data-fk="pill-tmpl-adapted">In part ' + num(tmplN - tmplSub) + '</button></div></div>' +
     '<button type="button" class="bigbtn" data-set="org=org" aria-pressed="' + (S.org === 'org') + '" data-fk="big-org"><span class="n">' + num(orgs) + '</span><span class="l">Organizations</span></button>' +
     '<button type="button" class="bigbtn" data-set="org=ind" aria-pressed="' + (S.org === 'ind') + '" data-fk="big-ind"><span class="n">' + num(inds) + '</span><span class="l">Individuals</span></button>' +
     '<div class="bigtile"><button type="button" class="bigbtn" data-set="ncrcany=1&ncrc=&ncrcdata=" aria-pressed="' + (S.ncrcany === '1') + '" data-fk="big-ncrc"><span class="n">' + num(citedN) + '</span><span class="l">NCRC cited</span><span class="sl">by name or by our published figures</span></button>' +
@@ -845,6 +854,7 @@ function cardHtml(g) {
   else h += '<span class="badge plain">Not classified</span>';
   var b = bucket(c);
   if (b) h += '<button type="button" class="badge" title="Filter by ' + esc(stanceLabel(b)) + ' stance" data-set="stance=' + esc(b) + '" data-fk="b-s-' + esc(c.id) + '"><span class="dot" style="background:' + scol(b) + '"></span>' + esc(stanceLabel(b)) + '</button>';
+  if (usesTmpl(c)) h += '<button type="button" class="badge" title="' + (tmplVerdict(c) === 'used' ? 'Built on the NCRC template' : 'Reuses parts of the NCRC template') + (c.template && c.template.sections && c.template.sections.length ? ': ' + esc(c.template.sections.join(', ')) : '') + '. Filter by comments that used the template" data-set="tmpl=1" data-fk="b-t-' + esc(c.id) + '">Used NCRC template</button>';
   if (mentions(c)) h += '<button type="button" class="badge" title="Filter by comments that mention NCRC" data-set="ncrc=1&ncrcdata=&ncrcany=" data-fk="b-n-' + esc(c.id) + '">Mentions NCRC</button>';
   else if (dataOnly(c)) h += '<button type="button" class="badge" title="Filter by comments that use NCRC data without naming NCRC" data-set="ncrcdata=1&ncrc=&ncrcany=" data-fk="b-d-' + esc(c.id) + '">Uses NCRC data</button>';
   if (c._ov) h += '<span class="badge plain rvmark" title="' + esc(reviewedLine(c)) + '">Reviewed</span>';
@@ -1039,6 +1049,8 @@ function dataHits(c, spec) { return ((c.ncrc_data && c.ncrc_data.hits) || []).ma
 function usesData(c) { return (c.flags || []).indexOf('uses_ncrc_data') >= 0 || !!(c.ncrc_data && c.ncrc_data.high > 0); }
 function dataOnly(c) { return usesData(c) && !mentions(c); }
 function cited(c) { return mentions(c) || usesData(c); }
+function tmplVerdict(c) { return (c.template && c.template.verdict) || ''; }
+function usesTmpl(c) { return (c.flags || []).indexOf('uses_template') >= 0 || tmplVerdict(c) === 'used' || tmplVerdict(c) === 'adapted'; }
 
 /* ---------- reflow of extracted text ---------- */
 var MARKER = /^(COMMENT FORM TEXT:|ATTACHMENT [^\n]*:)$/;
