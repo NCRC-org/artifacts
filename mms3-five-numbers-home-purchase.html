@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Five Numbers Behind a Home Purchase</title>
+<meta name="description" content="Median closing costs, interest rate, buyer income, property value and loan amount for owner-occupant home purchase loans, 2020 to 2025. NCRC analysis of HMDA data.">
+<meta property="og:title" content="Five Numbers Behind a Home Purchase, 2020 to 2025">
+<meta property="og:description" content="Median closing costs, interest rate, buyer income, property value and loan amount for owner-occupant home purchase loans, 2020 to 2025. NCRC analysis of HMDA data.">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+<style>
+/* Layout: white, light-only chart card in the Datawrapper style: title and share icons on top, five column panels, source line below. */
+:root {
+  color-scheme: light;
+  --bg: #ffffff;
+  --fg: #111111;
+  --muted: #6b7280;
+  --rule: #d4d8de;
+  --bar: #a6abb6;
+  --bar-last: #034ea0;
+  --hover: #2fade3;
+  --link: #2fade3;
+  --font: "Roboto", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+}
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--font);
+  padding-block: 16px 14px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1040px; margin: 0 auto; }
+.top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+h1 { font-size: 22px; line-height: 1.2; font-weight: 700; margin: 0 0 6px; text-wrap: balance; }
+.intro { margin: 0 0 16px; font-size: 14px; line-height: 1.45; color: var(--fg); max-width: 72ch; }
+.share { display: flex; gap: 6px; flex: none; }
+.share a { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 4px; color: var(--muted); }
+.share a:hover, .share a:focus-visible { color: var(--fg); background: #f1f3f5; outline: none; }
+.share svg { width: 16px; height: 16px; fill: currentColor; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 20px 16px; }
+.panel { min-width: 0; }
+.name { font-size: 14px; font-weight: 700; margin: 0; }
+.chg { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; margin: 0 0 2px; }
+.read { height: 20px; font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; display: flex; gap: 6px; align-items: baseline; }
+.read span { color: var(--muted); font-weight: 400; font-size: 13px; }
+svg.plot { display: block; width: 100%; height: auto; overflow: visible; }
+svg.plot text { fill: var(--muted); font-family: var(--font); font-size: 10.5px; font-variant-numeric: tabular-nums; }
+rect.b { fill: var(--bar); }
+rect.b.last { fill: var(--bar-last); }
+rect.b.on { fill: var(--hover); }
+.hit { fill: transparent; cursor: default; }
+.foot { margin: 16px 0 0; padding-top: 8px; border-top: 1px solid var(--rule); font-size: 12px; line-height: 1.4; color: var(--muted); }
+.foot a { color: inherit; }
+html, body { margin: 0; }
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>Five Numbers Behind a Home Purchase, 2020 to 2025</h1>
+      <p class="intro">Median owner-occupant home purchase loan. Each panel has its own scale, and its axis starts at the minimum labeled, not at zero. Hover a year to compare it across panels.</p>
+    </div>
+    <nav class="share" aria-label="Share this chart" id="share"></nav>
+  </div>
+  <div class="grid" id="grid"></div>
+  <p class="foot">Chart: Jason Richardson, NCRC. Source: NCRC analysis of HMDA data, 2020-2025. Loan amount and property value are band midpoints in public HMDA data.</p>
+</div>
+
+<script>
+/* Page the share links point to. Set this to the published address (the WordPress article or the GitHub Pages URL). Falls back to the current address. */
+var SHARE_URL = "";
+var SHARE_TEXT = "Five Numbers Behind a Home Purchase, 2020 to 2025";
+(function () {
+  var u = encodeURIComponent(SHARE_URL || location.href), t = encodeURIComponent(SHARE_TEXT);
+  var items = [
+    { label: "Share on Facebook", href: "https://www.facebook.com/sharer/sharer.php?u=" + u,
+      d: "M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.5-1.5h1.6V4.4c-.3 0-1.200-.1-2.300-.1-2.300 0-3.800 1.400-3.800 3.900v2.300H7.900v3h2.600V21h3z" },
+    { label: "Share on LinkedIn", href: "https://www.linkedin.com/sharing/share-offsite/?url=" + u,
+      d: "M6.900 8.900H3.800V20h3.100V8.900zM5.400 4a1.800 1.800 0 100 3.600 1.800 1.800 0 000-3.600zM20.200 13.700c0-2.700-1.400-4.900-4.100-4.900-1.300 0-2.200.7-2.600 1.400V8.900h-3.100V20h3.100v-6c0-1.500.3-2.600 1.900-2.600 1.500 0 1.700 1.300 1.700 2.700V20h3.100v-6.300z" },
+    { label: "Share on X", href: "https://twitter.com/intent/tweet?url=" + u + "&text=" + t,
+      d: "M17.800 3.500h3L14.200 11l7.800 9.500h-6.100l-4.800-5.800-5.500 5.800H2.600l7.100-7.700L2.200 3.500h6.200l4.300 5.300 5.100-5.300zm-1.100 15.200h1.700L7.500 5.200H5.700l11 13.500z" }
+  ];
+  document.getElementById("share").innerHTML = items.map(function (i) {
+    return '<a href="' + i.href + '" target="_blank" rel="noopener noreferrer" aria-label="' + i.label + '" title="' + i.label +
+      '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + i.d + '"/></svg></a>';
+  }).join("");
+})();
+
+var YEARS = [2020, 2021, 2022, 2023, 2024, 2025];
+var M = [
+  { name: "Closing Costs", kind: "usd", min: 1000, v: [4696.16, 4921.02, 5990.14, 6635.74, 6648.14, 6579.5], chg: "+40.1%" },
+  { name: "Interest Rate", kind: "pct", min: 2, v: [3.125, 3.0, 4.894, 6.5, 6.599, 6.49], chg: "+3.37 pts" },
+  { name: "Buyer Income", kind: "usd", min: 25000, top: 125000, v: [83000, 88000, 100000, 108000, 113000, 114000], chg: "+37.3%" },
+  { name: "Property Value", kind: "usd", min: 100000, v: [285000, 335000, 365000, 375000, 385000, 395000], chg: "+38.6%" },
+  { name: "Loan Amount", kind: "usd", min: 100000, v: [255000, 285000, 315000, 315000, 325000, 335000], chg: "+31.4%" }
+];
+function full(m, x) { return m.kind === "pct" ? x.toFixed(2) + "%" : "$" + Math.round(x).toLocaleString("en-US"); }
+function axis(m, x) {
+  if (m.kind === "pct") return x.toFixed(2) + "%";
+  return x >= 10000 ? "$" + Math.round(x / 1000) + "K" : "$" + Math.round(x).toLocaleString("en-US");
+}
+/* Smallest round number at or above the data max, so the midpoint is a clean half of the top. */
+function niceTop(x) {
+  var k = Math.pow(10, Math.floor(Math.log10(x))), c = [1, 1.2, 1.4, 1.6, 2, 2.5, 3, 3.5, 4, 5, 6, 7, 8, 9, 10];
+  for (var i = 0; i < c.length; i++) if (c[i] * k >= x) return c[i] * k;
+}
+
+var NS = "http://www.w3.org/2000/svg", grid = document.getElementById("grid"), panels = [];
+M.forEach(function (m) {
+  var W = 220, H = 150, left = 44, bot = 18, top = 4, n = 6, plotW = W - left, slot = plotW / n, bw = slot * 0.7;
+  var lo = m.min, max = m.top || niceTop(Math.max.apply(null, m.v)), mid = (lo + max) / 2, ph = H - bot - top;
+  var Y = function (x) { return top + ph - ((x - lo) / (max - lo)) * ph; };
+  var el = document.createElement("div"); el.className = "panel";
+  el.innerHTML = '<p class="name">' + m.name + '</p><p class="chg">' + m.chg + ' since 2020</p><div class="read" aria-live="polite"></div>';
+  var svg = document.createElementNS(NS, "svg"); svg.setAttribute("class", "plot"); svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+  svg.setAttribute("role", "img"); svg.setAttribute("aria-label", m.name + " by year, 2020 to 2025");
+  function add(tag, attrs, text) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; svg.appendChild(e); return e; }
+  add("line", { x1: left, x2: W, y1: Y(lo), y2: Y(lo), stroke: "var(--rule)" });
+  [[lo, axis(m, lo)], [mid, axis(m, mid)], [max, axis(m, max)]].forEach(function (t) {
+    add("text", { x: left - 6, y: Y(t[0]) + 3, "text-anchor": "end" }, t[1]);
+  });
+  var bars = [];
+  m.v.forEach(function (x, i) {
+    var bx = left + i * slot + (slot - bw) / 2;
+    bars.push(add("rect", { x: bx, y: Y(x), width: bw, height: Y(lo) - Y(x), rx: 2, "class": "b" + (i === 5 ? " last" : "") }));
+    if (i === 0 || i === 5) add("text", { x: bx + bw / 2, y: H - 4, "text-anchor": "middle" }, YEARS[i]);
+    var hit = add("rect", { x: left + i * slot, y: 0, width: slot, height: H - 2, "class": "hit", tabindex: 0, "aria-label": YEARS[i] + ": " + full(m, x) });
+    hit.dataset.i = i;
+  });
+  el.appendChild(svg); grid.appendChild(el); panels.push({ m: m, bars: bars, read: el.querySelector(".read") });
+});
+function show(i) {
+  panels.forEach(function (p) {
+    p.bars.forEach(function (b, k) { b.classList.toggle("on", k === i); });
+    p.read.innerHTML = i == null ? "" : full(p.m, p.m.v[i]) + "<span>" + YEARS[i] + "</span>";
+  });
+}
+grid.addEventListener("mouseover", function (e) { if (e.target.classList.contains("hit")) show(+e.target.dataset.i); });
+grid.addEventListener("focusin", function (e) { if (e.target.classList.contains("hit")) show(+e.target.dataset.i); });
+grid.addEventListener("mouseleave", function () { show(null); });
+grid.addEventListener("focusout", function () { show(null); });
+</script>
+<script>
+/* Tell the embedding page how tall this chart is, so the iframe fits without scrollbars. */
+(function () {
+  function send() { parent.postMessage({ type: "ncrc-embed-height", id: "mms3-five-numbers", height: document.documentElement.scrollHeight }, "*"); }
+  window.addEventListener("load", send); window.addEventListener("resize", send);
+  if (window.ResizeObserver) new ResizeObserver(send).observe(document.body);
+})();
+</script>
+</body>
+</html>
