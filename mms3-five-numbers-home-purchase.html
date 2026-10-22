@@ -37,7 +37,7 @@ h1 { font-size: 22px; line-height: 1.2; font-weight: 700; margin: 0 0 6px; text-
 .share a { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 4px; color: var(--muted); }
 .share a:hover, .share a:focus-visible { color: var(--fg); background: #f1f3f5; outline: none; }
 .share svg { width: 16px; height: 16px; fill: currentColor; }
-.static .share { display: none; }
+.static .share, .static .hint { display: none; }
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 20px 16px; }
 .panel { min-width: 0; }
 .name { font-size: 14px; font-weight: 700; margin: 0; }
@@ -62,7 +62,7 @@ html, body { margin: 0; }
   <div class="top">
     <div>
       <h1>Five Numbers Behind a Home Purchase, 2020 to 2025</h1>
-      <p class="intro">Median owner-occupant home purchase loan. Each panel has its own scale, and its axis starts at the minimum labeled, not at zero. Hover a year to compare it across panels.</p>
+      <p class="intro">Median owner-occupant home purchase loan. Each panel has its own scale, and its axis starts at the minimum labeled, not at zero. <span class="hint">Hover a year to compare it across panels.</span></p>
     </div>
     <nav class="share" aria-label="Share this chart" id="share"></nav>
   </div>
