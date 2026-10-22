@@ -37,6 +37,7 @@ h1 { font-size: 22px; line-height: 1.2; font-weight: 700; margin: 0 0 6px; text-
 .share a { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 4px; color: var(--muted); }
 .share a:hover, .share a:focus-visible { color: var(--fg); background: #f1f3f5; outline: none; }
 .share svg { width: 16px; height: 16px; fill: currentColor; }
+.static .share { display: none; }
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 20px 16px; }
 .panel { min-width: 0; }
 .name { font-size: 14px; font-weight: 700; margin: 0; }
@@ -71,6 +72,7 @@ html, body { margin: 0; }
 
 <script>
 /* Page the share links point to. Set this to the published address (the WordPress article or the GitHub Pages URL). Falls back to the current address. */
+if (/[?&]static/.test(location.search)) document.documentElement.classList.add("static");
 var SHARE_URL = "";
 var SHARE_TEXT = "Five Numbers Behind a Home Purchase, 2020 to 2025";
 (function () {
