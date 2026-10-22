@@ -32,7 +32,7 @@ h1 { font-size: 22px; line-height: 1.2; font-weight: 700; margin: 0 0 6px; text-
 .share a { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 4px; color: var(--muted); }
 .share a:hover, .share a:focus-visible { color: var(--fg); background: #f1f3f5; outline: none; }
 .share svg { width: 16px; height: 16px; fill: currentColor; }
-.static .share, .static .hint { display: none; }
+.static .share, .static .hint, .static .getdata { display: none; }
 svg.plot { display: block; width: 100%; height: auto; overflow: visible; }
 svg.plot text { fill: var(--muted); font-family: var(--font); font-size: 12px; font-variant-numeric: tabular-nums; }
 svg.plot text.v { fill: var(--fg); font-weight: 700; font-size: 13px; }
@@ -55,7 +55,7 @@ rect.b.on { fill: var(--hover); }
   </div>
   <div id="chart"></div>
   <p class="notes">Upper income means a borrower income of at least 120% of the area median family income. Investor means a mortgage-financed second home or investment property. Shares are of all home purchase loans, including a small number with no reported income. The 2025 figure is not directly comparable with earlier years because HUD changed how it sets area median income that year.</p>
-  <p class="foot">Chart: Jason Richardson, NCRC. Source: NCRC analysis of HMDA data, 2020-2025.</p>
+  <p class="foot">Chart: Jason Richardson, NCRC. Source: NCRC analysis of HMDA data, 2020-2025. <a class="getdata" href="https://docs.google.com/spreadsheets/d/1knpUzoIgY9muhxMlA8fOCKVy8qFd6vXpKVaCv39be2M/edit" target="_blank" rel="noopener noreferrer">Get the data</a>.</p>
 </div>
 
 <script>

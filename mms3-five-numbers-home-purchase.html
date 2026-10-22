@@ -37,7 +37,7 @@ h1 { font-size: 22px; line-height: 1.2; font-weight: 700; margin: 0 0 6px; text-
 .share a { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 4px; color: var(--muted); }
 .share a:hover, .share a:focus-visible { color: var(--fg); background: #f1f3f5; outline: none; }
 .share svg { width: 16px; height: 16px; fill: currentColor; }
-.static .share, .static .hint { display: none; }
+.static .share, .static .hint, .static .getdata { display: none; }
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 20px 16px; }
 .panel { min-width: 0; }
 .name { font-size: 14px; font-weight: 700; margin: 0; }
@@ -67,7 +67,7 @@ html, body { margin: 0; }
     <nav class="share" aria-label="Share this chart" id="share"></nav>
   </div>
   <div class="grid" id="grid"></div>
-  <p class="foot">Chart: Jason Richardson, NCRC. Source: NCRC analysis of HMDA data, 2020-2025. Loan amount and property value are band midpoints in public HMDA data.</p>
+  <p class="foot">Chart: Jason Richardson, NCRC. Source: NCRC analysis of HMDA data, 2020-2025. Loan amount and property value are band midpoints in public HMDA data. <a class="getdata" href="https://docs.google.com/spreadsheets/d/1knpUzoIgY9muhxMlA8fOCKVy8qFd6vXpKVaCv39be2M/edit" target="_blank" rel="noopener noreferrer">Get the data</a>.</p>
 </div>
 
 <script>
