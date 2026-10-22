@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Upper-Income and Investor Buyers as a Share of Home Purchase Loans</title>
+<meta name="description" content="Upper-income owner-occupants and investors combined, as a share of all home purchase loans, 2020 to 2025. NCRC analysis of HMDA data.">
+<meta property="og:title" content="Upper-Income and Investor Buyers as a Share of Home Purchase Loans, 2020-2025">
+<meta property="og:description" content="Upper-income owner-occupants and investors combined, as a share of all home purchase loans, 2020 to 2025. NCRC analysis of HMDA data.">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+<style>
+/* Layout: white, light-only chart card in the Datawrapper style: title and share icons on top, one column chart, notes and source below. */
+:root {
+  color-scheme: light;
+  --bg: #ffffff; --fg: #111111; --muted: #6b7280; --rule: #d4d8de;
+  --bar: #034ea0; --bar-first: #a6abb6; --hover: #2fade3;
+  --font: "Roboto", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+}
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--font);
+  padding-block: 16px 14px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 860px; margin: 0 auto; }
+.top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+h1 { font-size: 22px; line-height: 1.2; font-weight: 700; margin: 0 0 6px; text-wrap: balance; }
+.intro { margin: 0 0 12px; font-size: 14px; line-height: 1.45; max-width: 72ch; }
+.share { display: flex; gap: 6px; flex: none; }
+.share a { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 4px; color: var(--muted); }
+.share a:hover, .share a:focus-visible { color: var(--fg); background: #f1f3f5; outline: none; }
+.share svg { width: 16px; height: 16px; fill: currentColor; }
+.static .share, .static .hint { display: none; }
+svg.plot { display: block; width: 100%; height: auto; overflow: visible; }
+svg.plot text { fill: var(--muted); font-family: var(--font); font-size: 12px; font-variant-numeric: tabular-nums; }
+svg.plot text.v { fill: var(--fg); font-weight: 700; font-size: 13px; }
+rect.b { fill: var(--bar); }
+rect.b.first { fill: var(--bar-first); }
+rect.b.on { fill: var(--hover); }
+.hit { fill: transparent; }
+.notes { margin: 10px 0 0; font-size: 12px; line-height: 1.45; color: var(--muted); max-width: 90ch; }
+.foot { margin: 10px 0 0; padding-top: 8px; border-top: 1px solid var(--rule); font-size: 12px; line-height: 1.4; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>Upper-Income and Investor Buyers as a Share of Home Purchase Loans, 2020-2025</h1>
+      <p class="intro">Upper-income owner-occupants and investors combined, as a share of all home purchase loans.</p>
+    </div>
+    <nav class="share" aria-label="Share this chart" id="share"></nav>
+  </div>
+  <div id="chart"></div>
+  <p class="notes">Upper income means a borrower income of at least 120% of the area median family income. Investor means a mortgage-financed second home or investment property. Shares are of all home purchase loans, including a small number with no reported income. The 2025 figure is not directly comparable with earlier years because HUD changed how it sets area median income that year.</p>
+  <p class="foot">Chart: Jason Richardson, NCRC. Source: NCRC analysis of HMDA data, 2020-2025.</p>
+</div>
+
+<script>
+if (/[?&]static/.test(location.search)) document.documentElement.classList.add("static");
+/* Page the share links point to. Set this to the published address (the WordPress article or the GitHub Pages URL). Falls back to the current address. */
+var SHARE_URL = "";
+var SHARE_TEXT = "Upper-Income and Investor Buyers as a Share of Home Purchase Loans, 2020-2025";
+(function () {
+  var u = encodeURIComponent(SHARE_URL || location.href), t = encodeURIComponent(SHARE_TEXT);
+  var items = [
+    { label: "Share on Facebook", href: "https://www.facebook.com/sharer/sharer.php?u=" + u,
+      d: "M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.5-1.5h1.6V4.4c-.3 0-1.200-.1-2.300-.1-2.300 0-3.800 1.400-3.800 3.900v2.300H7.900v3h2.600V21h3z" },
+    { label: "Share on LinkedIn", href: "https://www.linkedin.com/sharing/share-offsite/?url=" + u,
+      d: "M6.900 8.900H3.800V20h3.100V8.900zM5.400 4a1.800 1.800 0 100 3.600 1.800 1.800 0 000-3.600zM20.200 13.700c0-2.700-1.400-4.900-4.100-4.900-1.300 0-2.200.7-2.600 1.400V8.900h-3.100V20h3.100v-6c0-1.500.3-2.600 1.900-2.600 1.500 0 1.700 1.300 1.700 2.700V20h3.100v-6.300z" },
+    { label: "Share on X", href: "https://twitter.com/intent/tweet?url=" + u + "&text=" + t,
+      d: "M17.800 3.500h3L14.200 11l7.800 9.500h-6.100l-4.800-5.800-5.500 5.800H2.600l7.100-7.700L2.200 3.500h6.200l4.300 5.300 5.100-5.300zm-1.100 15.200h1.700L7.500 5.200H5.700l11 13.500z" }
+  ];
+  document.getElementById("share").innerHTML = items.map(function (i) {
+    return '<a href="' + i.href + '" target="_blank" rel="noopener noreferrer" aria-label="' + i.label + '" title="' + i.label +
+      '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + i.d + '"/></svg></a>';
+  }).join("");
+})();
+
+/* Upper-income (owner-occupant) share plus investor share, percent of all home purchase loans. */
+var YEARS = [2020, 2021, 2022, 2023, 2024, 2025];
+var UPPER = [36.8, 37.56, 38.17, 39.96, 40.99, 38.44], INV = [10.76, 13.01, 12.86, 11.55, 12.17, 12.55];
+var VALS = YEARS.map(function (_, i) { return UPPER[i] + INV[i]; });
+var LO = 40, HI = 55, MID = 47.5, REF = 50;
+
+var NS = "http://www.w3.org/2000/svg", W = 780, H = 300, L = 54, B = 26, T = 22, slot = (W - L) / 6, bw = slot * 0.62;
+var svg = document.createElementNS(NS, "svg"); svg.setAttribute("class", "plot"); svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+svg.setAttribute("role", "img"); svg.setAttribute("aria-label", "Upper-income and investor share of home purchase loans by year, 2020 to 2025");
+function add(tag, attrs, text) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; svg.appendChild(e); return e; }
+var Y = function (v) { return T + (H - T - B) * (1 - (v - LO) / (HI - LO)); };
+[LO, MID, HI].forEach(function (t) { add("text", { x: L - 8, y: Y(t) + 4, "text-anchor": "end" }, t.toFixed(t % 1 ? 1 : 0) + "%"); });
+add("line", { x1: L, x2: W, y1: Y(LO), y2: Y(LO), stroke: "var(--rule)" });
+var bars = [], labels = [];
+VALS.forEach(function (v, i) {
+  var x = L + i * slot + (slot - bw) / 2;
+  bars.push(add("rect", { x: x, y: Y(v), width: bw, height: Y(LO) - Y(v), rx: 2, "class": "b" + (i === 0 ? " first" : "") }));
+  add("text", { x: x + bw / 2, y: Y(v) - 7, "text-anchor": "middle", "class": "v" }, v.toFixed(1) + "%");
+  add("text", { x: x + bw / 2, y: H - 6, "text-anchor": "middle" }, YEARS[i]);
+  var hit = add("rect", { x: L + i * slot, y: 0, width: slot, height: H - 2, "class": "hit", tabindex: 0, "aria-label": YEARS[i] + ": " + v.toFixed(1) + "%" });
+  hit.dataset.i = i;
+});
+/* 50% reference line and label, drawn over the bars. The label sits above the line at the left edge, over the shortest bar. */
+add("line", { x1: L, x2: W, y1: Y(REF), y2: Y(REF), stroke: "var(--fg)", "stroke-dasharray": "5 4", "stroke-width": 1 });
+add("text", { x: L + 4, y: Y(REF) - 8, "text-anchor": "start" }, "Half of all purchase loans");
+document.getElementById("chart").appendChild(svg);
+
+function show(i) { bars.forEach(function (b, k) { b.classList.toggle("on", k === i); }); }
+svg.addEventListener("mouseover", function (e) { if (e.target.classList.contains("hit")) show(+e.target.dataset.i); });
+svg.addEventListener("focusin", function (e) { if (e.target.classList.contains("hit")) show(+e.target.dataset.i); });
+svg.addEventListener("mouseleave", function () { show(null); });
+svg.addEventListener("focusout", function () { show(null); });
+</script>
+<script>
+/* Tell the embedding page how tall this chart is, so the iframe fits without scrollbars. */
+(function () {
+  function send() { parent.postMessage({ type: "ncrc-embed-height", id: "mms3-upper-investor-share", height: document.documentElement.scrollHeight }, "*"); }
+  window.addEventListener("load", send); window.addEventListener("resize", send);
+  if (window.ResizeObserver) new ResizeObserver(send).observe(document.body);
+})();
+</script>
+</body>
+</html>
