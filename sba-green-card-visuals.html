@@ -85,25 +85,25 @@ a{color:var(--blue4)}
 <header>
   <div class="eyebrow">Working draft for Manan Shah, S.J.Res.202 article</div>
   <h1>SBA green card visuals</h1>
-  <p class="lede">How much of SBA's 7(a) and 504 lending in fiscal year 2025 went to green-card-owned businesses, by SBA region. Pick a view and the figures update.</p>
+  <p class="lede">The SBA 7(a) and 504 lending at risk if green-card holders are barred from the programs, by SBA region, measured from fiscal year 2025 loans. Pick a view and the figures update.</p>
 </header>
 
 <section aria-labelledby="have">
-  <h2 id="have">What the data supports</h2>
+  <h2 id="have">What is at stake</h2>
   <div class="grid3">
-    <div class="panel stat"><div class="v">6,165</div><div class="l">FY25 7(a) and 504 loans to green-card-owned businesses</div></div>
-    <div class="panel stat"><div class="v">$5.54B</div><div class="l">Loan dollars</div></div>
-    <div class="panel stat"><div class="v">80,213</div><div class="l">Jobs supported</div></div>
+    <div class="panel stat"><div class="v">6,165</div><div class="l">Loans at risk: FY25 7(a) and 504 loans to green-card-owned businesses</div></div>
+    <div class="panel stat"><div class="v">$5.54B</div><div class="l">Loan dollars at risk</div></div>
+    <div class="panel stat"><div class="v">80,213</div><div class="l">Jobs supported by those loans</div></div>
   </div>
   <p>The Senate and House Small Business Committee minority gives these totals for ten SBA regions and nothing smaller. SBA's public loan files list borrower state, county and congressional district, but they have no citizenship field, so no state or district number can be read straight from them. The 7(a) share of the committee's figures is itself an estimate scaled up from its 504 analysis.</p>
-  <div class="note">Region 4, the Southeast, is second in loan dollars and jobs, behind the Pacific Southwest, and third in loan count. Measured as a share of each region's own SBA lending, the Southeast sits near the national average and the Atlantic region is far above it. The map lets you flip between both views.</div>
+  <div class="note">Read these as exposure, not a forecast. They are the FY25 lending that would not go through SBA's 7(a) and 504 programs if green-card-owned businesses were barred, assuming FY25 volume repeats and none of these borrowers could qualify or restructure. The Southeast ranks second in dollars at risk, behind the Pacific Southwest. The Atlantic region has the largest share of its own SBA lending at risk.</div>
 </section>
 
 <section aria-labelledby="b">
   <div class="head">
     <div>
       <div><span class="tag real">Committee data + SBA loan files</span></div>
-      <h2 id="b">State tile map shaded by region</h2>
+      <h2 id="b">Where the loss would land</h2>
     </div>
     <button type="button" class="method" id="openMethod" aria-haspopup="dialog">Methodology and sources</button>
   </div>
@@ -143,7 +143,16 @@ a{color:var(--blue4)}
     <h2 id="mTitle">Methodology and sources</h2>
 
     <h3>What the map shows</h3>
-    <p>For fiscal year 2025 (October 1, 2024 to September 30, 2025), the number of 7(a) and 504 loans, loan dollars and jobs supported that went to businesses with green-card-holder owners in each of SBA's ten regions. It also shows each region's green-card share of all SBA 7(a) and 504 lending in that region. Every state takes its region's figure. No number on this page is a state estimate.</p>
+    <p>For fiscal year 2025 (October 1, 2024 to September 30, 2025), the number of 7(a) and 504 loans, loan dollars and jobs supported that went to businesses with green-card-holder owners in each of SBA's ten regions. If green-card holders are barred from the programs, these are the amounts at risk. The map also shows the share of each region's total SBA 7(a) and 504 lending that those loans represent, which is how exposed each region is relative to its own SBA activity. Every state takes its region's figure. No number on this page is a state estimate.</p>
+
+    <h3>Reading the figures as expected losses</h3>
+    <p>The figures measure exposure, not a forecast. Treating them as annual losses assumes that:</p>
+    <ul>
+      <li>FY25 volume repeats in future years.</li>
+      <li>Every FY25 borrower with a green-card-holder owner would become ineligible, with no ownership restructuring and no change of status.</li>
+      <li>None of that lending is replaced, whether by other SBA borrowers or by credit from outside SBA. Some of these businesses may still find other financing, probably on different terms.</li>
+      <li>Jobs are the figure lenders reported as created or retained by each loan. They are jobs supported by the lending at risk, not a count of jobs that would be lost.</li>
+    </ul>
 
     <h3>Sources</h3>
     <ul>
@@ -189,7 +198,7 @@ var TOT={loans:6165,usd:5535441422.41,jobs:80213};
 /* Green-card share of each region's total FY25 7(a) + 504 approvals: [loans, dollars, jobs], in percent. National: 7.3, 9.9, 9.6 */
 var SH={1:[4.7,3.9,3.2],2:[17.6,18.5,16.7],3:[5.2,6.9,5.8],4:[7.0,10.0,11.2],5:[6.1,7.3,6.3],6:[5.2,5.7,6.3],7:[10.0,15.9,16.8],8:[5.4,9.1,9.3],9:[6.7,14.2,13.8],10:[3.2,2.8,3.2]};
 var NAT_SH=[7.3,9.9,9.6];
-var SHADES=[{k:"usd",label:"Loan dollars"},{k:0,label:"Share of region's loans"},{k:1,label:"Share of region's dollars"},{k:2,label:"Share of region's jobs"}];
+var SHADES=[{k:"usd",label:"Dollars at risk"},{k:0,label:"Share of region's loans at risk"},{k:1,label:"Share of region's dollars at risk"},{k:2,label:"Share of region's jobs at risk"}];
 var STATES={"WA":["Washington",1,1],"ID":["Idaho",2,1],"MT":["Montana",3,1],"ND":["North Dakota",4,1],"MN":["Minnesota",5,1],"WI":["Wisconsin",6,1],"MI":["Michigan",7,1],"NY":["New York",8,1],"VT":["Vermont",9,1],"NH":["New Hampshire",10,1],
 "OR":["Oregon",1,2],"NV":["Nevada",2,2],"WY":["Wyoming",3,2],"SD":["South Dakota",4,2],"IA":["Iowa",5,2],"IL":["Illinois",6,2],"IN":["Indiana",7,2],"OH":["Ohio",8,2],"PA":["Pennsylvania",9,2],"MA":["Massachusetts",10,2],
 "CA":["California",1,3],"UT":["Utah",2,3],"CO":["Colorado",3,3],"NE":["Nebraska",4,3],"MO":["Missouri",5,3],"KY":["Kentucky",6,3],"WV":["West Virginia",7,3],"VA":["Virginia",8,3],"NJ":["New Jersey",9,3],"CT":["Connecticut",10,3],
@@ -272,13 +281,13 @@ function updateMap(){
 }
 
 /* The figures panel: built once, values tween when the view changes. */
-var DL=[["Loans","loans",intFmt],["Loan dollars","usd",usdFmt],["Jobs supported","jobs",intFmt],["Average loan","avg",avgFmt],["Share of national dollars","natshare",pctFmt]];
+var DL=[["Loans at risk","loans",intFmt],["Dollars at risk","usd",usdFmt],["Jobs supported","jobs",intFmt],["Average loan","avg",avgFmt],["Share of national dollars at risk","natshare",pctFmt]];
 var dlNodes={},meterNodes=[];
 function buildCard(){
   var dl=document.getElementById("cDl");
   DL.forEach(function(d){dl.appendChild(el("dt",null,d[0]));var dd=el("dd",null,"0");dl.appendChild(dd);dlNodes[d[1]]=dd;});
   var mt=document.getElementById("cMeters");
-  mt.appendChild(el("div","mkey","Green-card share of all SBA 7(a) and 504 lending (red tick is the national rate)"));
+  mt.appendChild(el("div","mkey","Share of the region's SBA 7(a) and 504 lending at risk (red tick is the national rate)"));
   ["loans","dollars","jobs"].forEach(function(n,i){
     var m=el("div","meter"),h=el("div","mh"),lab=el("span",null,"Share of "+n),val=el("b",null,"0.0%");
     h.appendChild(lab);h.appendChild(val);var t=el("div","mt"),f=el("div","mf"),k=el("div","mk");
@@ -298,8 +307,8 @@ function updateCard(){
   document.getElementById("cNote").hidden=!(reg&&(reg.n===7||reg.n===8));
   var q=document.getElementById("cQuote");
   var text=reg
-   ?"In FY25, SBA lenders approved an estimated "+intFmt(d.loans)+" 7(a) and 504 loans worth "+usdFmt(d.usd)+" to green-card-owned businesses in Region "+reg.n+", about "+pctFmt(sh[0])+" of all SBA loans and "+pctFmt(sh[1])+" of SBA loan dollars in the region. These are region totals"+(selState?", not "+STATES[selState][0]+" figures":"")+"."
-   :"In FY25, SBA lenders approved an estimated 6,165 7(a) and 504 loans worth $5.5B to green-card-owned businesses nationwide, about 7.3% of all SBA 7(a) and 504 loans and 9.9% of loan dollars.";
+   ?"In FY25, SBA lenders approved an estimated "+intFmt(d.loans)+" 7(a) and 504 loans worth "+usdFmt(d.usd)+" to green-card-owned businesses in Region "+reg.n+". If those businesses are barred, that is the annual lending at risk in the region, about "+pctFmt(sh[0])+" of all SBA loans and "+pctFmt(sh[1])+" of SBA loan dollars there. These are region totals"+(selState?", not "+STATES[selState][0]+" figures":"")+"."
+   :"In FY25, SBA lenders approved an estimated 6,165 7(a) and 504 loans worth $5.5B to green-card-owned businesses nationwide. If those businesses are barred, that is the annual lending at risk, about 7.3% of all SBA 7(a) and 504 loans and 9.9% of loan dollars.";
   if(REDUCED){q.textContent=text;}else{q.style.opacity=0;setTimeout(function(){q.textContent=text;q.style.opacity=1;},180);}
 }
 
