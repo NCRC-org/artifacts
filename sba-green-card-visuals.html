@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SBA Green Card Visuals</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Public+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one working page. Data context, then the animated region map with its figures panel, then a methodology dialog. */
+:root{
+  --bg:#f6f7f9; --surface:#ffffff; --fg:#14213d; --muted:#5b6578; --line:#d9dee7;
+  --accent:#b3261e; --blue1:#e3ecf7; --blue2:#a9c4e4; --blue3:#5f8fc6; --blue4:#2d5f9a; --blue5:#14396b;
+  --ok:#2f6b3c; --warn:#8a5a00; --warn-bg:#fbf0d6; --on-hi:#ffffff; --scrim:rgba(10,18,36,.55);
+  --font-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-num:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0e1420; --surface:#161e2e; --fg:#e8ecf4; --muted:#9aa5ba; --line:#2a3550;
+  --accent:#ff7a70; --blue1:#1c2a42; --blue2:#2a4a78; --blue3:#4a7cb8; --blue4:#7aa6dc; --blue5:#b5d0f0;
+  --ok:#7cc48c; --warn:#f0c36a; --warn-bg:#2e2512; --on-hi:#0e1420; --scrim:rgba(0,0,0,.65); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1420; --surface:#161e2e; --fg:#e8ecf4; --muted:#9aa5ba; --line:#2a3550;
+  --accent:#ff7a70; --blue1:#1c2a42; --blue2:#2a4a78; --blue3:#4a7cb8; --blue4:#7aa6dc; --blue5:#b5d0f0;
+  --ok:#7cc48c; --warn:#f0c36a; --warn-bg:#2e2512; --on-hi:#0e1420; --scrim:rgba(0,0,0,.65); color-scheme:dark}
+[hidden]{display:none!important}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:15px;line-height:1.55;
+  padding-block:32px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:36px}
+h1{font-size:clamp(26px,4vw,36px);line-height:1.15;margin:0 0 8px;text-wrap:balance;letter-spacing:-.01em}
+h2{font-size:20px;margin:0 0 4px;text-wrap:balance}
+h3{font-size:15px;margin:0 0 6px}
+p{margin:0 0 10px;max-width:68ch}
+.lede{color:var(--muted);font-size:16px}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+section{display:flex;flex-direction:column;gap:14px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.stat .v{font-family:var(--font-num);font-size:24px;font-weight:500}
+.stat .l{color:var(--muted);font-size:13px}
+.note{background:var(--warn-bg);color:var(--fg);border-left:3px solid var(--warn);padding:10px 14px;border-radius:2px;font-size:14px;max-width:80ch}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:10px;border:1px solid var(--line);color:var(--muted);margin-right:6px}
+.tag.real{color:var(--ok);border-color:var(--ok)}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+button.chip,button.method{font:inherit;font-size:13px;padding:5px 11px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer;transition:background .2s,color .2s}
+button.chip[aria-pressed="true"]{background:var(--blue5);color:var(--on-hi);border-color:var(--blue5)}
+button.method{border-color:var(--blue4);color:var(--blue4);font-weight:600;padding:7px 14px}
+button.chip:focus-visible,button.method:focus-visible,.tile:focus-visible,.close:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.maprow{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:18px;align-items:start}
+@media(max-width:760px){.maprow{grid-template-columns:1fr}}
+.tiles{display:grid;grid-template-columns:repeat(11,1fr);gap:3px;max-width:640px}
+.tile{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:clamp(9px,1.6vw,13px);font-weight:600;border-radius:3px;border:2px solid transparent;cursor:pointer;color:var(--fg);padding:0;font-family:var(--font-body);
+  transition:background-color .45s ease,color .45s ease,opacity .45s ease,transform .3s ease}
+.tile[data-dim="1"]{opacity:.22}
+.tile[data-dim="0"]:hover{transform:scale(1.08)}
+.tile[aria-pressed="true"]{border-color:var(--fg);transform:scale(1.1)}
+.legend{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.legend i{display:inline-block;width:26px;height:12px}
+.card h3{font-size:19px;margin-bottom:2px}
+.card dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:12px 0}
+.card dt{color:var(--muted);font-size:13px}.card dd{margin:0;font-family:var(--font-num);text-align:right;font-variant-numeric:tabular-nums}
+.meters{display:flex;flex-direction:column;gap:9px;margin:14px 0}
+.meter .mh{display:flex;justify-content:space-between;font-size:13px}
+.meter .mh b{font-family:var(--font-num);font-weight:500}
+.meter .mt{position:relative;height:10px;background:var(--blue1);border-radius:2px;margin-top:3px}
+.meter .mf{height:100%;background:var(--blue4);border-radius:2px;width:0;transition:width .7s cubic-bezier(.2,.7,.2,1)}
+.meter .mk{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--accent)}
+.mkey{font-size:12px;color:var(--muted)}
+.card .quote{border-top:1px solid var(--line);padding-top:10px;font-size:14px;color:var(--muted);transition:opacity .2s}
+.states{font-size:13px;color:var(--muted)}
+a{color:var(--blue4)}
+.overlay{position:fixed;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;z-index:50;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.dialog{background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:8px;max-width:720px;width:100%;max-height:100%;overflow:auto;padding:22px 24px;position:relative}
+.dialog h2{font-size:22px;margin-bottom:12px;padding-right:40px}
+.dialog h3{margin-top:18px}
+.dialog ul,.dialog ol{margin:0 0 10px;padding-left:20px;display:flex;flex-direction:column;gap:6px;max-width:66ch}
+.close{position:absolute;top:12px;right:12px;font:inherit;font-size:20px;line-height:1;width:34px;height:34px;border-radius:17px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+@media (prefers-reduced-motion:reduce){.tile,.meter .mf,.card,.card .quote,button.chip{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Working draft for Manan Shah, S.J.Res.202 article</div>
+  <h1>SBA green card visuals</h1>
+  <p class="lede">How much of SBA's 7(a) and 504 lending in fiscal year 2025 went to green-card-owned businesses, by SBA region. Pick a view and the figures update.</p>
+</header>
+
+<section aria-labelledby="have">
+  <h2 id="have">What the data supports</h2>
+  <div class="grid3">
+    <div class="panel stat"><div class="v">6,165</div><div class="l">FY25 7(a) and 504 loans to green-card-owned businesses</div></div>
+    <div class="panel stat"><div class="v">$5.54B</div><div class="l">Loan dollars</div></div>
+    <div class="panel stat"><div class="v">80,213</div><div class="l">Jobs supported</div></div>
+  </div>
+  <p>The Senate and House Small Business Committee minority gives these totals for ten SBA regions and nothing smaller. SBA's public loan files list borrower state, county and congressional district, but they have no citizenship field, so no state or district number can be read straight from them. The 7(a) share of the committee's figures is itself an estimate scaled up from its 504 analysis.</p>
+  <div class="note">Region 4, the Southeast, is second in loan dollars and jobs, behind the Pacific Southwest, and third in loan count. Measured as a share of each region's own SBA lending, the Southeast sits near the national average and the Atlantic region is far above it. The map lets you flip between both views.</div>
+</section>
+
+<section aria-labelledby="b">
+  <div class="head">
+    <div>
+      <div><span class="tag real">Committee data + SBA loan files</span></div>
+      <h2 id="b">State tile map shaded by region</h2>
+    </div>
+    <button type="button" class="method" id="openMethod" aria-haspopup="dialog">Methodology and sources</button>
+  </div>
+  <p>Every state takes its SBA region's value, so the map shows regions, not state estimates. Pick what to shade by, then click a state or a region, or press Play tour. The panel on the right follows whatever is selected and shows the national figures when nothing is.</p>
+  <div class="panel">
+    <div class="eyebrow" style="margin-bottom:6px">Shade by</div>
+    <div class="chips" id="shadeChips" role="group" aria-label="Shade by" style="margin-bottom:12px"></div>
+    <div class="eyebrow" style="margin-bottom:6px">View</div>
+    <div class="chips" id="regionChips" role="group" aria-label="Choose a view"></div>
+    <div class="maprow" style="margin-top:14px">
+      <div>
+        <div class="tiles" id="tiles"></div>
+        <div class="legend" id="legend" style="margin-top:10px"></div>
+        <p style="font-size:12px;color:var(--muted);margin-top:8px">Puerto Rico and the Virgin Islands (Region 2) and Guam and American Samoa (Region 9) are in the committee table and shown in the bottom row.</p>
+      </div>
+      <div class="card" id="card" aria-live="polite">
+        <div class="eyebrow" id="cEyebrow"></div>
+        <h3 id="cTitle"></h3>
+        <div class="states" id="cStates"></div>
+        <dl id="cDl"></dl>
+        <div class="meters" id="cMeters"></div>
+        <div class="note" id="cNote" hidden>The committee lists 266 loans for both Region 7 and Region 8. Confirm with the committee before using either rate.</div>
+        <div class="quote" id="cQuote" style="margin-top:12px"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer style="color:var(--muted);font-size:13px;max-width:80ch">
+  <p>Sources and method are in the <a href="#methodology" id="footMethod">methodology</a>. The committee's region rows add to 6,166 loans and 80,215 jobs, one and two more than its printed totals of 6,165 and 80,213. Dollars add exactly.</p>
+</footer>
+</div>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="mTitle" id="dialog" tabindex="-1">
+    <button type="button" class="close" id="closeMethod" aria-label="Close methodology">&times;</button>
+    <h2 id="mTitle">Methodology and sources</h2>
+
+    <h3>What the map shows</h3>
+    <p>For fiscal year 2025 (October 1, 2024 to September 30, 2025), the number of 7(a) and 504 loans, loan dollars and jobs supported that went to businesses with green-card-holder owners in each of SBA's ten regions. It also shows each region's green-card share of all SBA 7(a) and 504 lending in that region. Every state takes its region's figure. No number on this page is a state estimate.</p>
+
+    <h3>Sources</h3>
+    <ul>
+      <li><b>Green-card counts by region.</b> The Senate and House Small Business Committee minority (Ranking Members Markey and Velázquez) fact sheet, "Congressional Review Act (CRA) Resolution on SBA's Draconian Citizenship Restrictions." It reports loans, loan dollars and jobs for each SBA region. The 504 figures come from the Senate committee's analysis. The 7(a) figures are the committee's estimates, scaled up from the 504 analysis.</li>
+      <li><b>All SBA lending, for the denominators.</b> SBA's <a href="https://data.sba.gov/dataset/7a-504-foia" target="_blank" rel="noopener">7(a) and 504 FOIA loan data</a> on the <a href="https://data.sba.gov/" target="_blank" rel="noopener">SBA open data portal</a>, as of June 30, 2026. Files used: <a href="https://data.sba.gov/sites/default/files/uploaded_resources/FOIA_7a_FY2020_Present_asof_260630.csv" target="_blank" rel="noopener">7(a) FY2020 to present</a> and <a href="https://data.sba.gov/sites/default/files/uploaded_resources/FOIA_504_FY2010_Present_asof_260630.csv" target="_blank" rel="noopener">504 FY2010 to present</a>. Field definitions are in the <a href="https://data.sba.gov/sites/default/files/uploaded_resources/7a_504_foia_data_dictionary.xlsx" target="_blank" rel="noopener">FOIA data dictionary</a>.</li>
+    </ul>
+
+    <h3>How the shares are calculated</h3>
+    <ol>
+      <li>Keep every loan in the FOIA files with an approval date from October 1, 2024 to September 30, 2025. That is 78,078 7(a) loans and 6,762 504 loans, 84,840 in all.</li>
+      <li>Assign each loan to an SBA region by its project state, using the region lists in the committee's table. Puerto Rico and the Virgin Islands are in Region 2, and Guam and American Samoa are in Region 9.</li>
+      <li>Sum loans, jobs and loan dollars for each region. For 504 loans, dollars are the SBA and certified development company amount plus the third-party lender amount, because that is the basis that reproduces the committee's 504 percentages.</li>
+      <li>Divide the committee's green-card figure for each region by that region's total from step 3.</li>
+    </ol>
+    <p>The national shares are 7.3% of loans, 9.9% of dollars and 9.6% of jobs. As a check, the same method gives 456 of 6,762 FY25 504 loans, or 6.7%, and about $2.0 billion of $18.7 billion in 504 dollars, or about 10.7%, which matches the committee's stated 6.7% and 10%.</p>
+
+    <h3>Limits to keep in mind</h3>
+    <ul>
+      <li>SBA's public files have no citizenship or immigration-status field, so green-card loans cannot be identified from them. The numerators come only from the committee.</li>
+      <li>The 7(a) numbers are estimates, so the 7(a) and combined figures are only as good as that estimate.</li>
+      <li>The denominators count every FY25 approval in the file, including about 14,000 7(a) approvals later cancelled. This assumes the committee counted approvals the same way.</li>
+      <li>Region assignment by project state is our assumption. The committee does not say how it assigned loans to regions.</li>
+      <li>The committee lists 266 loans for both Region 7 and Region 8, which may be a transcription error. Its region rows also add to 6,166 loans and 80,215 jobs, against printed totals of 6,165 and 80,213. These should be confirmed with the committee.</li>
+      <li>The loan files are as of June 30, 2026, so some FY25 approvals may have changed status since the committee's analysis.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+var R=[
+ {n:1,name:"New England",loans:241,usd:98056314.55,jobs:1294,st:["CT","ME","MA","NH","RI","VT"]},
+ {n:2,name:"Atlantic",loans:1594,usd:770863563.04,jobs:12505,st:["NJ","NY","PR","VI"]},
+ {n:3,name:"Mid-Atlantic",loans:346,usd:243615434.42,jobs:4009,st:["DE","DC","MD","PA","VA","WV"]},
+ {n:4,name:"Southeast",loans:1069,usd:1123015989.56,jobs:17129,st:["AL","FL","GA","KY","MS","NC","SC","TN"]},
+ {n:5,name:"Great Lakes",loans:833,usd:587957383.77,jobs:8545,st:["IL","IN","MI","MN","OH","WI"]},
+ {n:6,name:"South Central",loans:447,usd:388606944.30,jobs:6332,st:["AR","LA","NM","OK","TX"]},
+ {n:7,name:"Great Plains",loans:266,usd:283139544.65,jobs:4436,st:["IA","KS","MO","NE"]},
+ {n:8,name:"Rocky Mountain",loans:266,usd:341882655.00,jobs:4572,st:["CO","MT","ND","SD","UT","WY"]},
+ {n:9,name:"Pacific Southwest",loans:954,usd:1622963688.51,jobs:20200,st:["AZ","CA","HI","NV","AS","GU"]},
+ {n:10,name:"Pacific Northwest",loans:150,usd:75339904.60,jobs:1193,st:["AK","ID","OR","WA"]}
+];
+var TOT={loans:6165,usd:5535441422.41,jobs:80213};
+/* Green-card share of each region's total FY25 7(a) + 504 approvals: [loans, dollars, jobs], in percent. National: 7.3, 9.9, 9.6 */
+var SH={1:[4.7,3.9,3.2],2:[17.6,18.5,16.7],3:[5.2,6.9,5.8],4:[7.0,10.0,11.2],5:[6.1,7.3,6.3],6:[5.2,5.7,6.3],7:[10.0,15.9,16.8],8:[5.4,9.1,9.3],9:[6.7,14.2,13.8],10:[3.2,2.8,3.2]};
+var NAT_SH=[7.3,9.9,9.6];
+var SHADES=[{k:"usd",label:"Loan dollars"},{k:0,label:"Share of region's loans"},{k:1,label:"Share of region's dollars"},{k:2,label:"Share of region's jobs"}];
+var STATES={"WA":["Washington",1,1],"ID":["Idaho",2,1],"MT":["Montana",3,1],"ND":["North Dakota",4,1],"MN":["Minnesota",5,1],"WI":["Wisconsin",6,1],"MI":["Michigan",7,1],"NY":["New York",8,1],"VT":["Vermont",9,1],"NH":["New Hampshire",10,1],
+"OR":["Oregon",1,2],"NV":["Nevada",2,2],"WY":["Wyoming",3,2],"SD":["South Dakota",4,2],"IA":["Iowa",5,2],"IL":["Illinois",6,2],"IN":["Indiana",7,2],"OH":["Ohio",8,2],"PA":["Pennsylvania",9,2],"MA":["Massachusetts",10,2],
+"CA":["California",1,3],"UT":["Utah",2,3],"CO":["Colorado",3,3],"NE":["Nebraska",4,3],"MO":["Missouri",5,3],"KY":["Kentucky",6,3],"WV":["West Virginia",7,3],"VA":["Virginia",8,3],"NJ":["New Jersey",9,3],"CT":["Connecticut",10,3],
+"AZ":["Arizona",2,4],"NM":["New Mexico",3,4],"KS":["Kansas",4,4],"AR":["Arkansas",5,4],"TN":["Tennessee",6,4],"NC":["North Carolina",7,4],"MD":["Maryland",8,4],"DE":["Delaware",9,4],"RI":["Rhode Island",10,4],
+"OK":["Oklahoma",4,5],"LA":["Louisiana",5,5],"MS":["Mississippi",6,5],"AL":["Alabama",7,5],"SC":["South Carolina",8,5],"DC":["District of Columbia",9,5],
+"TX":["Texas",4,6],"GA":["Georgia",7,6],"FL":["Florida",8,6],"HI":["Hawaii",0,6],"AK":["Alaska",0,0],"ME":["Maine",10,0],
+"GU":["Guam",1,6],"AS":["American Samoa",2,6],"PR":["Puerto Rico",9,6],"VI":["U.S. Virgin Islands",10,6]};
+var byState={};R.forEach(function(r){r.st.forEach(function(s){byState[s]=r;});});
+var view=null,selState=null,shadeBy="usd",playTimer=null;
+var REDUCED=false;try{REDUCED=window.matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}
+
+function el(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!=null)e.textContent=h;return e;}
+function usdFmt(v){return v>=1e9?"$"+(v/1e9).toFixed(2)+"B":"$"+Math.round(v/1e6)+"M";}
+function intFmt(v){return Math.round(v).toLocaleString("en-US");}
+function pctFmt(v){return v.toFixed(1)+"%";}
+function avgFmt(v){return "$"+Math.round(v/1000).toLocaleString("en-US")+"K";}
+
+/* Count a number up or down to its new value. */
+function tween(node,to,fmt){
+  if(node._raf)cancelAnimationFrame(node._raf);
+  var from=node._v==null?to:node._v;
+  if(REDUCED||from===to){node._v=to;node.textContent=fmt(to);return;}
+  var t0=null,dur=750;
+  function step(ts){
+    if(t0===null)t0=ts;var p=Math.min(1,(ts-t0)/dur),e=1-Math.pow(1-p,3);
+    var v=from+(to-from)*e;node._v=v;node.textContent=fmt(v);
+    if(p<1)node._raf=requestAnimationFrame(step);else{node._v=to;node.textContent=fmt(to);}
+  }
+  node._raf=requestAnimationFrame(step);
+}
+
+function level(r){
+  if(shadeBy==="usd"){var v=r.usd/1622963688.51;return v>.75?5:v>.4?4:v>.2?3:v>.1?2:1;}
+  var p=SH[r.n][shadeBy];return p>=15?5:p>=10?4:p>=7?3:p>=5?2:1;
+}
+function shade(r){return "var(--blue"+level(r)+")";}
+function textOn(r){var l=level(r);return l>=4?"var(--on-hi)":l===3?"#fff":"var(--fg)";}
+
+/* Controls are built once, then updated in place so focus and transitions survive. */
+var shadeBtns=[],viewBtns=[],tileEls={};
+function buildControls(){
+  var sb=document.getElementById("shadeChips");
+  SHADES.forEach(function(s){var b=el("button","chip",s.label);b.type="button";
+    b.onclick=function(){shadeBy=s.k;refresh();};sb.appendChild(b);shadeBtns.push([s.k,b]);});
+  var rb=document.getElementById("regionChips");
+  var nat=el("button","chip","National");nat.type="button";nat.onclick=function(){stopTour();setView(null,null);};rb.appendChild(nat);viewBtns.push([null,nat]);
+  R.forEach(function(r){var b=el("button","chip","R"+r.n+" "+r.name);b.type="button";
+    b.onclick=function(){stopTour();setView(r.n,null);};rb.appendChild(b);viewBtns.push([r.n,b]);});
+  var play=el("button","chip","Play tour");play.type="button";play.id="playBtn";
+  play.onclick=function(){playTimer?stopTour():startTour();};rb.appendChild(play);
+}
+function syncPressed(){
+  shadeBtns.forEach(function(x){x[1].setAttribute("aria-pressed",String(x[0]===shadeBy));});
+  viewBtns.forEach(function(x){x[1].setAttribute("aria-pressed",String(x[0]===view));});
+  var p=document.getElementById("playBtn");if(p){p.textContent=playTimer?"Stop tour":"Play tour";p.setAttribute("aria-pressed",String(!!playTimer));}
+}
+
+function buildMap(){
+  var box=document.getElementById("tiles");
+  var cells={};Object.keys(STATES).forEach(function(k){var s=STATES[k];cells[s[2]+","+s[1]]=k;});
+  for(var r=0;r<=6;r++){for(var c=0;c<=10;c++){
+    var k=cells[r+","+c];
+    if(!k){box.appendChild(el("div"));continue;}
+    var b=el("button","tile",k);b.type="button";b.title=STATES[k][0]+": Region "+byState[k].n;
+    b.setAttribute("aria-label",STATES[k][0]+", Region "+byState[k].n+" "+byState[k].name);
+    b.onclick=function(key){return function(){stopTour();setView(byState[key].n,key);};}(k);
+    box.appendChild(b);tileEls[k]=b;}}
+}
+function updateMap(){
+  Object.keys(tileEls).forEach(function(k){
+    var reg=byState[k],b=tileEls[k];
+    b.style.backgroundColor=shade(reg);b.style.color=textOn(reg);
+    b.dataset.dim=(view!==null&&reg.n!==view)?"1":"0";
+    b.setAttribute("aria-pressed",String(k===selState));});
+  var lg=document.getElementById("legend");lg.textContent="";
+  var cur=SHADES.filter(function(s){return s.k===shadeBy;})[0];
+  lg.appendChild(document.createTextNode(cur.label+": "));
+  var steps=shadeBy==="usd"?["under $0.16B","to $0.32B","to $0.65B","to $1.2B","$1.2B and up"]:["under 5%","5% to 7%","7% to 10%","10% to 15%","15% and up"];
+  steps.forEach(function(t,i){var sw=el("i");sw.style.background="var(--blue"+(i+1)+")";lg.appendChild(sw);lg.appendChild(document.createTextNode(t+" "));});
+}
+
+/* The figures panel: built once, values tween when the view changes. */
+var DL=[["Loans","loans",intFmt],["Loan dollars","usd",usdFmt],["Jobs supported","jobs",intFmt],["Average loan","avg",avgFmt],["Share of national dollars","natshare",pctFmt]];
+var dlNodes={},meterNodes=[];
+function buildCard(){
+  var dl=document.getElementById("cDl");
+  DL.forEach(function(d){dl.appendChild(el("dt",null,d[0]));var dd=el("dd",null,"0");dl.appendChild(dd);dlNodes[d[1]]=dd;});
+  var mt=document.getElementById("cMeters");
+  mt.appendChild(el("div","mkey","Green-card share of all SBA 7(a) and 504 lending (red tick is the national rate)"));
+  ["loans","dollars","jobs"].forEach(function(n,i){
+    var m=el("div","meter"),h=el("div","mh"),lab=el("span",null,"Share of "+n),val=el("b",null,"0.0%");
+    h.appendChild(lab);h.appendChild(val);var t=el("div","mt"),f=el("div","mf"),k=el("div","mk");
+    k.style.left=(NAT_SH[i]/20*100)+"%";t.appendChild(f);t.appendChild(k);m.appendChild(h);m.appendChild(t);mt.appendChild(m);
+    meterNodes.push({val:val,fill:f});});
+}
+function updateCard(){
+  var reg=view===null?null:R.filter(function(r){return r.n===view;})[0];
+  var d=reg?{loans:reg.loans,usd:reg.usd,jobs:reg.jobs}:TOT;
+  var sh=reg?SH[reg.n]:NAT_SH;
+  document.getElementById("cEyebrow").textContent=reg?(selState?"Selected: "+STATES[selState][0]:"Region view"):"National view";
+  document.getElementById("cTitle").textContent=reg?"Region "+reg.n+": "+reg.name:"All SBA regions";
+  document.getElementById("cStates").textContent=reg?"Covers "+reg.st.join(", "):"Ten regions, all 50 states and the territories";
+  tween(dlNodes.loans,d.loans,intFmt);tween(dlNodes.usd,d.usd,usdFmt);tween(dlNodes.jobs,d.jobs,intFmt);
+  tween(dlNodes.avg,d.usd/d.loans,avgFmt);tween(dlNodes.natshare,d.usd/TOT.usd*100,pctFmt);
+  meterNodes.forEach(function(m,i){tween(m.val,sh[i],pctFmt);m.fill.style.width=Math.min(100,sh[i]/20*100)+"%";});
+  document.getElementById("cNote").hidden=!(reg&&(reg.n===7||reg.n===8));
+  var q=document.getElementById("cQuote");
+  var text=reg
+   ?"In FY25, SBA lenders approved an estimated "+intFmt(d.loans)+" 7(a) and 504 loans worth "+usdFmt(d.usd)+" to green-card-owned businesses in Region "+reg.n+", about "+pctFmt(sh[0])+" of all SBA loans and "+pctFmt(sh[1])+" of SBA loan dollars in the region. These are region totals"+(selState?", not "+STATES[selState][0]+" figures":"")+"."
+   :"In FY25, SBA lenders approved an estimated 6,165 7(a) and 504 loans worth $5.5B to green-card-owned businesses nationwide, about 7.3% of all SBA 7(a) and 504 loans and 9.9% of loan dollars.";
+  if(REDUCED){q.textContent=text;}else{q.style.opacity=0;setTimeout(function(){q.textContent=text;q.style.opacity=1;},180);}
+}
+
+function setView(n,state){view=n;selState=state;refresh();}
+function refresh(){syncPressed();updateMap();updateCard();}
+
+function startTour(){
+  var seq=[null,4,2,9,1,3,5,6,7,8,10],i=0;
+  function go(){setView(seq[i%seq.length],null);i++;}
+  go();playTimer=setInterval(go,3500);syncPressed();
+}
+function stopTour(){if(playTimer){clearInterval(playTimer);playTimer=null;syncPressed();}}
+
+/* Methodology dialog */
+var lastFocus=null;
+function openMethod(e){
+  if(e)e.preventDefault();
+  lastFocus=document.activeElement;
+  document.getElementById("overlay").hidden=false;
+  document.getElementById("dialog").scrollTop=0;
+  document.getElementById("closeMethod").focus();
+}
+function closeMethod(){
+  document.getElementById("overlay").hidden=true;
+  if(lastFocus&&lastFocus.focus)lastFocus.focus();
+}
+document.getElementById("openMethod").onclick=openMethod;
+document.getElementById("footMethod").onclick=openMethod;
+document.getElementById("closeMethod").onclick=closeMethod;
+document.getElementById("overlay").onclick=function(e){if(e.target===this)closeMethod();};
+document.addEventListener("keydown",function(e){
+  var ov=document.getElementById("overlay");
+  if(ov.hidden)return;
+  if(e.key==="Escape"){closeMethod();return;}
+  if(e.key==="Tab"){
+    var f=ov.querySelectorAll("a[href],button");if(!f.length)return;
+    var first=f[0],last=f[f.length-1];
+    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+  }
+});
+
+buildControls();buildMap();buildCard();refresh();
+</script>
+</body>
+</html>
