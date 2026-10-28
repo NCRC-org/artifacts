@@ -570,6 +570,13 @@ function matches(c) {
   }
   return true;
 }
+function countWith(skip, pred) {
+  var saved = {}, n;
+  skip.forEach(function (k) { saved[k] = S[k]; S[k] = DEF[k]; });
+  n = U.filter(function (c) { return matches(c) && pred(c); }).length;
+  skip.forEach(function (k) { S[k] = saved[k]; });
+  return n;
+}
 function cmp(a, b) {
   var r;
   switch (S.sort) {
@@ -638,12 +645,17 @@ function drawWho() {
     if (f === 'org') orgs++; else if (f === 'ind') inds++; else unk++;
     if (c.commenter_type) cls.push(c);
   });
-  var byName = U.filter(mentions).length, dataN = U.filter(dataOnly).length, citedN = U.filter(cited).length;
-  if (!S.once && D.totals && typeof D.totals.ncrc_cited_any === 'number') citedN = D.totals.ncrc_cited_any;
-  var tmplN = U.filter(usesTmpl).length, tmplSub = U.filter(function (c) { return tmplVerdict(c) === 'used'; }).length;
-  if (!S.once && D.totals && typeof D.totals.uses_template === 'number') { tmplN = D.totals.uses_template; tmplSub = D.totals.uses_template_substantial; }
+  /* The cards follow every active filter except their own, so a card stays clickable and
+     shows what its click would give within the rest of the current selection. */
+  var NCRC_KEYS = ['ncrc', 'ncrcdata', 'ncrcany'];
+  var allN = countWith([], function () { return true; });
+  orgs = countWith(['org'], function (c) { return orgFlag(c) === 'org'; });
+  inds = countWith(['org'], function (c) { return orgFlag(c) === 'ind'; });
+  var byName = countWith(NCRC_KEYS, mentions), dataN = countWith(NCRC_KEYS, dataOnly), citedN = countWith(NCRC_KEYS, cited);
+  var tmplN = countWith(['tmpl'], usesTmpl), tmplSub = countWith(['tmpl'], function (c) { return tmplVerdict(c) === 'used'; });
+  var narrowed = allN !== U.length;
   $('big').innerHTML =
-    '<div class="bigtile"><div class="bigbtn static"><span class="n">' + num(orgs + inds + unk) + '</span><span class="l">Total comments</span><span class="sl">on docket OCC-2026-0694</span></div></div>' +
+    '<div class="bigtile"><div class="bigbtn static"><span class="n">' + num(allN) + '</span><span class="l">Total comments</span><span class="sl">' + (narrowed ? 'matching the current filters, of ' + num(U.length) : 'on docket OCC-2026-0694') + '</span></div></div>' +
     '<div class="bigtile"><button type="button" class="bigbtn" data-set="tmpl=1" aria-pressed="' + (S.tmpl === '1') + '" data-fk="big-tmpl"><span class="n">' + num(tmplN) + '</span><span class="l">Used NCRC template</span><span class="sl">letters built on or adapted from our template</span></button>' +
     '<div class="tpills"><button type="button" class="pill' + (S.tmpl === 'used' ? ' on' : '') + '" data-set="tmpl=used" data-fk="pill-tmpl-used">Substantially ' + num(tmplSub) + '</button>' +
     '<button type="button" class="pill' + (S.tmpl === 'adapted' ? ' on' : '') + '" data-set="tmpl=adapted" data-fk="pill-tmpl-adapted">In part ' + num(tmplN - tmplSub) + '</button></div></div>' +
