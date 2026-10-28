@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
 <title>Comment Tracker</title>
 <meta name="description" content="Public comments on a federal rulemaking docket: who commented, where they stand and what they raise.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1420,6 +1421,23 @@ function tipShow(el, x, y) {
 function tipHide() { $('tip').style.display = 'none'; }
 
 init();
+})();
+</script>
+<script>
+/* When framed (for example on ncrc.org), tell the parent page how tall the content is so the frame can grow to fit. */
+(function () {
+  if (window.parent === window) return;
+  var last = 0;
+  function send() {
+    var h = Math.ceil(document.body.getBoundingClientRect().height);
+    if (!h || h === last) return;
+    last = h;
+    try { window.parent.postMessage({ type: 'cra-tracker-height', height: h }, '*'); } catch (e) { /* ignore */ }
+  }
+  if (window.ResizeObserver) new ResizeObserver(send).observe(document.body);
+  window.addEventListener('load', send);
+  window.addEventListener('resize', send);
+  send();
 })();
 </script>
 </body>
